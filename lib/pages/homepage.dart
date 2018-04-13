@@ -1,8 +1,14 @@
+import 'dart:async';
+import 'dart:convert';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:pubg_companion/models/tweet.dart';
 import 'package:pubg_companion/pages/settings.dart';
+import 'package:pubg_companion/utils/app_text_styles.dart';
 import 'package:pubg_companion/utils/app_themes.dart';
-import 'package:pubg_companion/utils/font_awesome_icon_data.dart';
+import 'package:pubg_companion/widgets/tweets_list.dart';
+import 'package:twitter/twitter.dart';
 
 class HomePage extends StatefulWidget {
   HomePage({Key key, this.title, this.appTheme, @required this.onThemeChanged})
@@ -19,50 +25,84 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final key = new GlobalKey<ScaffoldState>();
-  int _counter = 0;
+
+  Future<List<Tweet>> fetchTweets() async {
+    final Twitter twitter = new Twitter(
+        '4y9EBqgIt1quyWEOkof6PTJS8',
+        'shBFHm3UvuJ3HN8rYhUFMYQAYnKDutktTCZKGAbVo5oKTMjYZ1',
+        '48317927-8ABvYyRU18QmtD1DXLvJvzESk8NEpqOwDNyTK85mT',
+        'qlrMy7x7gy0CHS2K1Y2SXOdaTctrrTz73o0DjXdPuZ2lo');
+
+    var response = await twitter.request("GET",
+        "statuses/user_timeline.json?screen_name=PUBGMOBILE&count=200&include_rts=false&exclude_replies=true");
+
+    print(response.body);
+    return parseTweets(response.body);
+  }
+
+  List<Tweet> parseTweets(String responseBody) {
+    final parsed = json.decode(responseBody);
+
+    return parsed.map<Tweet>((json) => new Tweet.fromJson(json)).toList();
+  }
 
   List<String> drawerItems = ['A', 'B', 'Settings'];
 
   @override
   Widget build(BuildContext context) {
     return new Directionality(
-        textDirection: TextDirection.ltr,
-        child: new Scaffold(
-          drawer: new Drawer(
-            child: new ListView.builder(
-              itemBuilder: (context, index) => new ListTile(
-                    title: new Text(drawerItems[index]),
-                    subtitle: new Text('Item #' + index.toString()),
-                    onTap: () {},
-                  ),
-              itemCount: drawerItems.length,
-            ),
-          ),
-          appBar: new AppBar(
-            elevation: 0.0,
-            title: new Text(widget.title),
-          ),
-          body: new Center(
-            child: new Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                new Text(
-                  'You have pushed the button this many times:',
+      textDirection: TextDirection.ltr,
+      child: new Scaffold(
+        drawer: new Drawer(
+          child: new ListView.builder(
+            itemBuilder: (context, index) => new ListTile(
+                  title: new Text(drawerItems[index]),
+                  subtitle: new Text('Item #' + index.toString()),
+                  onTap: () {},
                 ),
-                new Text(
-                  '$_counter',
-                  style: Theme.of(context).textTheme.display1,
+            itemCount: drawerItems.length,
+          ),
+        ),
+        appBar: new AppBar(
+          elevation: 0.0,
+          title: new Text(
+            widget.title,
+            style: AppTextStyles.title,
+          ),
+        ),
+        body: new Center(
+          child: new Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: <Widget>[
+              /*             new Container(
+                padding: EdgeInsets.only(top: 10.0),
+                child: new Image(
+                  image: new AssetImage('assets/images/PUBG_Header.png'),
+                  width: 350.0,
                 ),
-              ],
-            ),
+              ),
+              new Text(
+                'Companion',
+                style: AppTextStyles.headline,
+              ),*/
+              new FutureBuilder<List<Tweet>>(
+                future: fetchTweets(),
+                builder: (context, snapshot) {
+                  if (snapshot.hasError) print(snapshot.error);
+
+                  return snapshot.hasData
+                      ? new TweetsList(tweets: snapshot.data)
+                      : new Container(
+                          padding: EdgeInsets.only(top: 50.0),
+                          child: new Center(
+                              child: new CircularProgressIndicator()),
+                        );
+                },
+              ),
+            ],
           ),
-          floatingActionButton: new FloatingActionButton(
-            onPressed: () {
-              Navigator.pushNamed(context, SettingsPage.routeName);
-            },
-            tooltip: 'Increment',
-            child: new Icon(FontAwesomeIcons.cog),
-          ),
-        ));
+        ),
+      ),
+    );
   }
 }
