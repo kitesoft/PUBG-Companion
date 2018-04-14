@@ -1,15 +1,13 @@
-import 'dart:async';
 import 'dart:collection';
-import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:pubg_companion/api/twitter_api.dart';
 import 'package:pubg_companion/models/tweet.dart';
 import 'package:pubg_companion/pages/settings.dart';
 import 'package:pubg_companion/utils/app_text_styles.dart';
 import 'package:pubg_companion/utils/app_themes.dart';
 import 'package:pubg_companion/widgets/tweets_list.dart';
-import 'package:twitter/twitter.dart';
 
 class HomePage extends StatefulWidget {
   HomePage({Key key, this.title, this.appTheme, @required this.onThemeChanged})
@@ -25,30 +23,10 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  final key = new GlobalKey<ScaffoldState>();
-
-  Future<List<Tweet>> fetchTweets() async {
-    final Twitter twitter = new Twitter(
-        '4y9EBqgIt1quyWEOkof6PTJS8',
-        'shBFHm3UvuJ3HN8rYhUFMYQAYnKDutktTCZKGAbVo5oKTMjYZ1',
-        '48317927-8ABvYyRU18QmtD1DXLvJvzESk8NEpqOwDNyTK85mT',
-        'qlrMy7x7gy0CHS2K1Y2SXOdaTctrrTz73o0DjXdPuZ2lo');
-
-    var response = await twitter.request("GET",
-        "statuses/user_timeline.json?screen_name=PUBGMOBILE&count=200&include_rts=false&exclude_replies=true");
-
-    print(response.body.substring(100));
-    return parseTweets(response.body);
-  }
-
-  List<Tweet> parseTweets(String responseBody) {
-    final parsed = json.decode(responseBody);
-
-    return parsed.map<Tweet>((json) => new Tweet.fromJson(json)).toList();
-  }
+  final _scaffoldKey = new GlobalKey<ScaffoldState>();
 
   LinkedHashMap<String, String> drawerItems() {
-    LinkedHashMap<String, String> _map = new LinkedHashMap<String,String>();
+    LinkedHashMap<String, String> _map = new LinkedHashMap<String, String>();
     _map.addAll({'Settings': SettingsPage.routeName});
 
     return _map;
@@ -59,6 +37,7 @@ class _HomePageState extends State<HomePage> {
     return new Directionality(
       textDirection: TextDirection.ltr,
       child: new Scaffold(
+        key: _scaffoldKey,
         drawer: new Drawer(
           child: new ListView.builder(
             itemBuilder: (context, index) => new ListTile(
@@ -98,12 +77,15 @@ class _HomePageState extends State<HomePage> {
                 style: AppTextStyles.headline,
               ),*/
               new FutureBuilder<List<Tweet>>(
-                future: fetchTweets(),
+                future: TwitterApi.fetchTweets(),
                 builder: (context, snapshot) {
                   if (snapshot.hasError) print(snapshot.error);
 
                   return snapshot.hasData
-                      ? new TweetsList(tweets: snapshot.data)
+                      ? new TweetsList(
+                          tweets: snapshot.data,
+                          scaffoldKey: _scaffoldKey,
+                        )
                       : new Container(
                           padding: EdgeInsets.only(top: 50.0),
                           child: new Center(

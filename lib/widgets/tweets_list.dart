@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:pubg_companion/api/twitter_api.dart';
 import 'package:pubg_companion/models/link.dart';
 import 'package:pubg_companion/utils/font_awesome_icon_data.dart';
 import 'package:pubg_companion/utils/month_handler.dart';
@@ -11,17 +12,37 @@ import 'package:transparent_image/transparent_image.dart';
 
 class TweetsList extends StatefulWidget {
   final List<Tweet> tweets;
+  final GlobalKey<ScaffoldState> scaffoldKey;
 
-  TweetsList({Key key, this.tweets}) : super(key: key);
+  TweetsList({Key key, this.tweets, this.scaffoldKey}) : super(key: key);
 
   @override
-  _TweetsListState createState() => new _TweetsListState(tweets: tweets);
+  _TweetsListState createState() =>
+      new _TweetsListState(tweets: tweets, scaffoldKey: scaffoldKey);
 }
 
 class _TweetsListState extends State<TweetsList> {
-  final List<Tweet> tweets;
+  List<Tweet> tweets;
+  final GlobalKey<ScaffoldState> scaffoldKey;
 
-  _TweetsListState({this.tweets});
+  _TweetsListState({this.tweets, this.scaffoldKey});
+
+  Future<Null> _handleRefresh() async {
+    Completer _completer = new Completer();
+    Tweet temp = tweets[5];
+
+    tweets.clear();
+
+    List<Tweet> _newTweets = await TwitterApi.fetchTweets();
+
+    setState(() {
+      tweets = _newTweets;
+      scaffoldKey.currentState?.showSnackBar(
+          new SnackBar(content: new Text('News feed updated successfully')));
+    });
+
+    return _completer.complete();
+  }
 
   DateTime _parseDate(String tweetDate) {
     List<String> parts = tweetDate.split(' ');
@@ -55,8 +76,9 @@ class _TweetsListState extends State<TweetsList> {
 
     if (tweetLocalDate.isAfter(todayStart) ||
         tweetLocalDate.difference(DateTime.now()).inHours.abs() <= 12) {
-      str = todayStart.difference(tweetLocalDate).inHours.abs().toString() +
-          ' hours ago';
+      int hours =
+          (DateTime.now().difference(tweetLocalDate).inMinutes / 60).round();
+      str = hours.toString() + ' hours ago';
     } else if ((tweetLocalDate.isBefore(todayStart) &&
             tweetLocalDate.isAfter(yesterdayStart)) &&
         tweetLocalDate.difference(DateTime.now()).inHours.abs() > 12) {
@@ -263,76 +285,82 @@ class _TweetsListState extends State<TweetsList> {
   @override
   Widget build(BuildContext context) {
     return new Expanded(
-        child: new ListView.builder(
-      itemCount: tweets.length,
-      itemBuilder: (context, index) {
-        return new Column(children: <Widget>[
-          new GestureDetector(
-            child: new Container(
-              child: new Column(
-                children: <Widget>[
-                  new ListTile(
-                    title: _displayDate(tweets[index].createdAt),
-                    subtitle: new Text(tweets[index].text),
-                  ),
-                  (tweets[index].tweetEntities.tweetUrls.length == 0 ||
-                          tweets[index]
-                              .tweetEntities
-                              .tweetUrls[0]
-                              .expandedUrl
-                              .contains(tweets[index].idStr))
-                      ? new Container(
-                          height: 0.0,
-                          width: 0.0,
-                        )
-                      : new FutureBuilder<Link>(
-                          future: _fetchLink(
-                              tweets[index].tweetEntities.tweetUrls[0].url),
-                          builder: (context, snapshot) {
-                            if (snapshot.hasData) {
-                              return _buildLinkContainer(
-                                  context,
-                                  snapshot.data.image,
-                                  snapshot.data.title,
-                                  snapshot.data.description,
-                                  tweets[index].tweetEntities.tweetUrls[0].url);
-                            } else if (snapshot.hasError) {
-                              return new Text("${snapshot.error}");
-                            }
+        child: new RefreshIndicator(
+      onRefresh: _handleRefresh,
+      child: new ListView.builder(
+        itemCount: tweets.length,
+        itemBuilder: (context, index) {
+          return new Column(children: <Widget>[
+            new GestureDetector(
+              child: new Container(
+                child: new Column(
+                  children: <Widget>[
+                    new ListTile(
+                      title: _displayDate(tweets[index].createdAt),
+                      subtitle: new Text(tweets[index].text),
+                    ),
+                    (tweets[index].tweetEntities.tweetUrls.length == 0 ||
+                            tweets[index]
+                                .tweetEntities
+                                .tweetUrls[0]
+                                .expandedUrl
+                                .contains(tweets[index].idStr))
+                        ? new Container(
+                            height: 0.0,
+                            width: 0.0,
+                          )
+                        : new FutureBuilder<Link>(
+                            future: _fetchLink(
+                                tweets[index].tweetEntities.tweetUrls[0].url),
+                            builder: (context, snapshot) {
+                              if (snapshot.hasData) {
+                                return _buildLinkContainer(
+                                    context,
+                                    snapshot.data.image,
+                                    snapshot.data.title,
+                                    snapshot.data.description,
+                                    tweets[index]
+                                        .tweetEntities
+                                        .tweetUrls[0]
+                                        .url);
+                              } else if (snapshot.hasError) {
+                                return new Text("${snapshot.error}");
+                              }
 
-                            // By default, show a loading spinner
-                            return new CircularProgressIndicator();
-                          },
-                        ),
-                  tweets[index].tweetExtendedEntities == null
-                      ? new Container(
-                          height: 0.0,
-                          width: 0.0,
-                        )
-                      : _showTweetMedia(context,
-                          tweets[index].tweetExtendedEntities.tweetMedia)
-                ],
+                              // By default, show a loading spinner
+                              return new CircularProgressIndicator();
+                            },
+                          ),
+                    tweets[index].tweetExtendedEntities == null
+                        ? new Container(
+                            height: 0.0,
+                            width: 0.0,
+                          )
+                        : _showTweetMedia(context,
+                            tweets[index].tweetExtendedEntities.tweetMedia)
+                  ],
+                ),
               ),
-            ),
-            onTap: () {
-              print('https://twitter.com/' +
-                  'PUBGMobile' +
-                  '/status/' +
-                  tweets[index].idStr);
-              setState(() {
-                // TODO: replace 'PUBGMobile' with tweet actual username
-                _launched = _launchInBrowser('https://twitter.com/' +
+              onTap: () {
+                print('https://twitter.com/' +
                     'PUBGMobile' +
                     '/status/' +
                     tweets[index].idStr);
-              });
-            },
-          ),
-          new Divider(
-            height: 20.0,
-          )
-        ]);
-      },
+                setState(() {
+                  // TODO: replace 'PUBGMobile' with tweet actual username
+                  _launched = _launchInBrowser('https://twitter.com/' +
+                      'PUBGMobile' +
+                      '/status/' +
+                      tweets[index].idStr);
+                });
+              },
+            ),
+            new Divider(
+              height: 20.0,
+            )
+          ]);
+        },
+      ),
     ));
   }
 }
