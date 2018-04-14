@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:collection';
 import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
@@ -36,7 +37,7 @@ class _HomePageState extends State<HomePage> {
     var response = await twitter.request("GET",
         "statuses/user_timeline.json?screen_name=PUBGMOBILE&count=200&include_rts=false&exclude_replies=true");
 
-    print(response.body);
+    print(response.body.substring(100));
     return parseTweets(response.body);
   }
 
@@ -46,7 +47,12 @@ class _HomePageState extends State<HomePage> {
     return parsed.map<Tweet>((json) => new Tweet.fromJson(json)).toList();
   }
 
-  List<String> drawerItems = ['A', 'B', 'Settings'];
+  LinkedHashMap<String, String> drawerItems() {
+    LinkedHashMap<String, String> _map = new LinkedHashMap<String,String>();
+    _map.addAll({'Settings': SettingsPage.routeName});
+
+    return _map;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -56,18 +62,24 @@ class _HomePageState extends State<HomePage> {
         drawer: new Drawer(
           child: new ListView.builder(
             itemBuilder: (context, index) => new ListTile(
-                  title: new Text(drawerItems[index]),
+                  title: new Text(drawerItems().keys.toList()[index]),
                   subtitle: new Text('Item #' + index.toString()),
-                  onTap: () {},
+                  onTap: () {
+                    Navigator.of(context).pushNamed(
+                        drawerItems()[drawerItems().keys.toList()[index]]);
+                  },
                 ),
-            itemCount: drawerItems.length,
+            itemCount: drawerItems().length,
           ),
         ),
         appBar: new AppBar(
           elevation: 0.0,
-          title: new Text(
-            widget.title,
-            style: AppTextStyles.title,
+          title: new Container(
+            padding: EdgeInsets.only(bottom: 5.0),
+            child: new Text(
+              widget.title,
+              style: AppTextStyles.title,
+            ),
           ),
         ),
         body: new Center(

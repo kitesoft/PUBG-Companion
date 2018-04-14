@@ -12,6 +12,7 @@ class FontAwesomeIcons {
 
   // Home page
   static const IconData link = const _IconDataSolid(0xf0c1);
+  static const IconData play = const _IconDataSolid(0xf04b);
 }
 
 class _IconDataBrands extends IconData {

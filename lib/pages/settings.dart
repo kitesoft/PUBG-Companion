@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pubg_companion/utils/app_text_styles.dart';
 import 'package:pubg_companion/utils/app_themes.dart';
 
 class SettingsPage extends StatefulWidget {
@@ -24,7 +25,8 @@ class _SettingsPageState extends State<SettingsPage> {
         child: new Scaffold(
           appBar: new AppBar(
             title: new Text(
-              widget.title, /* style: AppTextStyles.title,*/
+              widget.title,
+              style: AppTextStyles.title,
             ),
           ),
           body: new Row(

@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:pubg_companion/models/link.dart';
 import 'package:pubg_companion/utils/font_awesome_icon_data.dart';
+import 'package:pubg_companion/utils/month_handler.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
@@ -13,55 +14,13 @@ class TweetsList extends StatelessWidget {
 
   TweetsList({Key key, this.tweets}) : super(key: key);
 
-  DateTime _parseDate(String twitterDate) {
-    List<String> parts = twitterDate.split(' ');
+  DateTime _parseDate(String tweetDate) {
+    List<String> parts = tweetDate.split(' ');
 
     String _year = parts[5];
-    String _month;
+    String _month = MonthHandler.nameToNumber(parts[1]);
     String _day = parts[2];
     String _time = parts[3];
-
-    switch (parts[1]) {
-      case 'Jan':
-        _month = '01';
-        break;
-      case 'Feb':
-        _month = '02';
-        break;
-      case 'Mar':
-        _month = '03';
-        break;
-      case 'Apr':
-        _month = '04';
-        break;
-      case 'May':
-        _month = '05';
-        break;
-      case 'Jun':
-        _month = '06';
-        break;
-      case 'Jul':
-        _month = '07';
-        break;
-      case 'Aug':
-        _month = '08';
-        break;
-      case 'Sep':
-        _month = '09';
-        break;
-      case 'Oct':
-        _month = '10';
-        break;
-      case 'Nov':
-        _month = '11';
-        break;
-      case 'Dec':
-        _month = '12';
-        break;
-      default:
-        _month = '01';
-        break;
-    }
 
     DateTime finalDate =
         DateTime.parse(_year + '-' + _month + '-' + _day + ' ' + _time);
@@ -78,6 +37,42 @@ class TweetsList extends StatelessWidget {
     return utcDate;
   }
 
+  Widget _displayDate(String tweetDate) {
+    DateTime tweetLocalDate = _parseDate(tweetDate).toLocal();
+    DateTime todayStart = new DateTime(
+        DateTime.now().year, DateTime.now().month, DateTime.now().day);
+    DateTime yesterdayStart = todayStart.subtract(const Duration(days: 1));
+    String str = '';
+
+    if (tweetLocalDate.isAfter(todayStart) ||
+        tweetLocalDate.difference(DateTime.now()).inHours.abs() <= 12) {
+      str = todayStart.difference(tweetLocalDate).inHours.abs().toString() +
+          ' hours ago';
+    } else if ((tweetLocalDate.isBefore(todayStart) &&
+            tweetLocalDate.isAfter(yesterdayStart)) &&
+        tweetLocalDate.difference(DateTime.now()).inHours.abs() > 12) {
+      str = 'Yesterday';
+    } else {
+      String tweetHour = tweetLocalDate.hour > 9
+          ? tweetLocalDate.hour.toString()
+          : '0' + tweetLocalDate.hour.toString();
+
+      String tweetMinute = tweetLocalDate.minute > 9
+          ? tweetLocalDate.minute.toString()
+          : '0' + tweetLocalDate.minute.toString();
+
+      str = MonthHandler.numberToName(tweetLocalDate.month) +
+          ' ' +
+          tweetLocalDate.day.toString() +
+          ', ' +
+          tweetHour +
+          ':' +
+          tweetMinute;
+    }
+
+    return new Text(str);
+  }
+
   Future<Link> _fetchLink(String url) async {
     final String key = '5acff9a6ac6f756e50467c8f9b2f27641d5f950c24eef';
 
@@ -90,7 +85,6 @@ class TweetsList extends StatelessWidget {
 
   Widget _buildLinkContainer(BuildContext context, String _image, String _title,
       String _description, String _url) {
-
     if (_image.isNotEmpty) {
       return new Container(
         decoration:
@@ -101,13 +95,10 @@ class TweetsList extends StatelessWidget {
           children: <Widget>[
             new Container(
               color: Theme.of(context).accentColor,
-              padding: EdgeInsets.all(10.0),
-              constraints:
-                  new BoxConstraints(maxHeight: 100.0, maxWidth: 100.0),
+              constraints: new BoxConstraints(maxHeight: 100.0),
               child: new FadeInImage.memoryNetwork(
                 placeholder: kTransparentImage,
-                image:
-                    _image,
+                image: _image,
                 //image: _image,
               ),
             ),
@@ -120,11 +111,11 @@ class TweetsList extends StatelessWidget {
                   children: <Widget>[
                     new Text(
                       _title,
-                      style: Theme
-                          .of(context)
-                          .textTheme
-                          .title
-                          .copyWith(color: Theme.of(context).accentColor),
+                      style: Theme.of(context).textTheme.title.copyWith(
+                          color: Theme.of(context).accentColor,
+                          fontSize: 15.0,
+                          fontWeight: FontWeight.w400),
+                      overflow: TextOverflow.ellipsis,
                     ),
                     new Flexible(
                       child: new Container(
@@ -134,9 +125,10 @@ class TweetsList extends StatelessWidget {
                           style: Theme
                               .of(context)
                               .textTheme
-                              .body1,
-                            maxLines: 3,
-                            overflow: TextOverflow.ellipsis,
+                              .body1
+                              .copyWith(fontWeight: FontWeight.w300),
+                          maxLines: 3,
+                          overflow: TextOverflow.ellipsis,
                         ),
                       ),
                     ),
@@ -149,8 +141,8 @@ class TweetsList extends StatelessWidget {
       );
     } else {
       return new Container(
-        decoration:
-            new BoxDecoration(border: Border.all(color: Colors.white30)),
+        decoration: new BoxDecoration(
+            border: Border.all(color: Theme.of(context).dividerColor)),
         margin: EdgeInsets.fromLTRB(10.0, 5.0, 10.0, 5.0),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -163,6 +155,7 @@ class TweetsList extends StatelessWidget {
               child: new Icon(
                 FontAwesomeIcons.link,
                 size: 25.0,
+                color: Theme.of(context).accentIconTheme.color,
               ),
             ),
             new Expanded(
@@ -185,7 +178,8 @@ class TweetsList extends StatelessWidget {
     }
   }
 
-  Widget _showTweetMedia(List<TweetMedia> tweetMedia) {
+  Widget _showTweetMedia(BuildContext context, List<TweetMedia> tweetMedia) {
+    Widget _media;
     // TODO: return grid with multiple images if exists
     List<String> urls = [];
 
@@ -193,17 +187,39 @@ class TweetsList extends StatelessWidget {
       // TODO: check about videos
       if (tweetMedia[i].mediaType == 'photo') {
         urls.add(tweetMedia[i].mediaUrl);
+      } else if (tweetMedia[i].mediaType == 'animated_gif') {
+        urls.add(tweetMedia[i].mediaUrl);
       } else {
         print(tweetMedia[i].mediaType);
       }
     }
 
-    return new Container(
-      padding: EdgeInsets.fromLTRB(10.0, 5.0, 10.0, 5.0),
-      child: new FadeInImage.memoryNetwork(
+    if (tweetMedia[0].mediaType == 'photo') {
+      _media = new FadeInImage.memoryNetwork(
         placeholder: kTransparentImage,
         image: urls[0],
-      ),
+      );
+    } else if (tweetMedia[0].mediaType == 'animated_gif') {
+      _media = new Stack(
+        children: <Widget>[
+          new FadeInImage.memoryNetwork(
+              placeholder: kTransparentImage, image: urls[0]),
+          new Positioned(
+            top: 85.0,
+            width: MediaQuery.of(context).size.width - 10,
+            child: new Icon(
+              FontAwesomeIcons.play,
+              color: Theme.of(context).accentIconTheme.color,
+              size: 50.0,
+            ),
+          )
+        ],
+      );
+    }
+
+    return new Container(
+      padding: EdgeInsets.fromLTRB(10.0, 5.0, 10.0, 5.0),
+      child: _media,
     );
   }
 
@@ -215,31 +231,15 @@ class TweetsList extends StatelessWidget {
       itemBuilder: (context, index) {
         return new Column(children: <Widget>[
           new ListTile(
-            title: _parseDate(tweets[index].createdAt)
-                        .difference(DateTime.now().toUtc())
-                        .inHours >
-                    -24
-                ? _parseDate(tweets[index].createdAt)
-                            .difference(DateTime.now().toUtc())
-                            .inHours >
-                        -2
-                    ? new Text(_parseDate(tweets[index].createdAt)
-                            .difference(DateTime.now().toUtc())
-                            .inMinutes
-                            .abs()
-                            .toString() +
-                        ' minutes ago')
-                    : new Text(_parseDate(tweets[index].createdAt)
-                            .difference(DateTime.now().toUtc())
-                            .inHours
-                            .abs()
-                            .toString() +
-                        ' hours ago')
-                : new Text(
-                    _parseDate(tweets[index].createdAt).toLocal().toString()),
+            title: _displayDate(tweets[index].createdAt),
             subtitle: new Text(tweets[index].text),
           ),
-          tweets[index].tweetEntities.tweetUrls.length == 0
+          (tweets[index].tweetEntities.tweetUrls.length == 0 ||
+                  tweets[index]
+                      .tweetEntities
+                      .tweetUrls[0]
+                      .expandedUrl
+                      .contains(tweets[index].idStr))
               ? new Container(
                   height: 0.0,
                   width: 0.0,
@@ -268,7 +268,8 @@ class TweetsList extends StatelessWidget {
                   height: 0.0,
                   width: 0.0,
                 )
-              : _showTweetMedia(tweets[index].tweetExtendedEntities.tweetMedia),
+              : _showTweetMedia(
+                  context, tweets[index].tweetExtendedEntities.tweetMedia),
           new Divider(
             height: 20.0,
           )
