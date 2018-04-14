@@ -9,10 +9,19 @@ import 'package:flutter/material.dart';
 import 'package:pubg_companion/models/tweet.dart';
 import 'package:transparent_image/transparent_image.dart';
 
-class TweetsList extends StatelessWidget {
+class TweetsList extends StatefulWidget {
   final List<Tweet> tweets;
 
   TweetsList({Key key, this.tweets}) : super(key: key);
+
+  @override
+  _TweetsListState createState() => new _TweetsListState(tweets: tweets);
+}
+
+class _TweetsListState extends State<TweetsList> {
+  final List<Tweet> tweets;
+
+  _TweetsListState({this.tweets});
 
   DateTime _parseDate(String tweetDate) {
     List<String> parts = tweetDate.split(' ');
@@ -223,6 +232,34 @@ class TweetsList extends StatelessWidget {
     );
   }
 
+  // Link Handling
+  Future<Null> _launched;
+
+  Future<Null> _launchInBrowser(String url) async {
+    if (await canLaunch(url)) {
+      await launch(url, forceSafariVC: false, forceWebView: false);
+    } else {
+      throw 'Could not launch $url';
+    }
+  }
+
+  Future<Null> _launchInWebViewOrVC(String url) async {
+    if (await canLaunch(url)) {
+      await launch(url, forceSafariVC: true, forceWebView: true);
+    } else {
+      throw 'Could not launch $url';
+    }
+  }
+
+  Widget _launchStatus(BuildContext context, AsyncSnapshot<Null> snapshot) {
+    if (snapshot.hasError) {
+      return new Text('Error: ${snapshot.error}');
+    } else {
+      return const Text('');
+    }
+  }
+  // End of link handling
+
   @override
   Widget build(BuildContext context) {
     return new Expanded(
@@ -230,46 +267,67 @@ class TweetsList extends StatelessWidget {
       itemCount: tweets.length,
       itemBuilder: (context, index) {
         return new Column(children: <Widget>[
-          new ListTile(
-            title: _displayDate(tweets[index].createdAt),
-            subtitle: new Text(tweets[index].text),
-          ),
-          (tweets[index].tweetEntities.tweetUrls.length == 0 ||
-                  tweets[index]
-                      .tweetEntities
-                      .tweetUrls[0]
-                      .expandedUrl
-                      .contains(tweets[index].idStr))
-              ? new Container(
-                  height: 0.0,
-                  width: 0.0,
-                )
-              : new FutureBuilder<Link>(
-                  future:
-                      _fetchLink(tweets[index].tweetEntities.tweetUrls[0].url),
-                  builder: (context, snapshot) {
-                    if (snapshot.hasData) {
-                      return _buildLinkContainer(
-                          context,
-                          snapshot.data.image,
-                          snapshot.data.title,
-                          snapshot.data.description,
-                          tweets[index].tweetEntities.tweetUrls[0].url);
-                    } else if (snapshot.hasError) {
-                      return new Text("${snapshot.error}");
-                    }
+          new GestureDetector(
+            child: new Container(
+              child: new Column(
+                children: <Widget>[
+                  new ListTile(
+                    title: _displayDate(tweets[index].createdAt),
+                    subtitle: new Text(tweets[index].text),
+                  ),
+                  (tweets[index].tweetEntities.tweetUrls.length == 0 ||
+                          tweets[index]
+                              .tweetEntities
+                              .tweetUrls[0]
+                              .expandedUrl
+                              .contains(tweets[index].idStr))
+                      ? new Container(
+                          height: 0.0,
+                          width: 0.0,
+                        )
+                      : new FutureBuilder<Link>(
+                          future: _fetchLink(
+                              tweets[index].tweetEntities.tweetUrls[0].url),
+                          builder: (context, snapshot) {
+                            if (snapshot.hasData) {
+                              return _buildLinkContainer(
+                                  context,
+                                  snapshot.data.image,
+                                  snapshot.data.title,
+                                  snapshot.data.description,
+                                  tweets[index].tweetEntities.tweetUrls[0].url);
+                            } else if (snapshot.hasError) {
+                              return new Text("${snapshot.error}");
+                            }
 
-                    // By default, show a loading spinner
-                    return new CircularProgressIndicator();
-                  },
-                ),
-          tweets[index].tweetExtendedEntities == null
-              ? new Container(
-                  height: 0.0,
-                  width: 0.0,
-                )
-              : _showTweetMedia(
-                  context, tweets[index].tweetExtendedEntities.tweetMedia),
+                            // By default, show a loading spinner
+                            return new CircularProgressIndicator();
+                          },
+                        ),
+                  tweets[index].tweetExtendedEntities == null
+                      ? new Container(
+                          height: 0.0,
+                          width: 0.0,
+                        )
+                      : _showTweetMedia(context,
+                          tweets[index].tweetExtendedEntities.tweetMedia)
+                ],
+              ),
+            ),
+            onTap: () {
+              print('https://twitter.com/' +
+                  'PUBGMobile' +
+                  '/status/' +
+                  tweets[index].idStr);
+              setState(() {
+                // TODO: replace 'PUBGMobile' with tweet actual username
+                _launched = _launchInBrowser('https://twitter.com/' +
+                    'PUBGMobile' +
+                    '/status/' +
+                    tweets[index].idStr);
+              });
+            },
+          ),
           new Divider(
             height: 20.0,
           )
