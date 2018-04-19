@@ -29,7 +29,6 @@ class _MyMaterialAppState extends State<MyMaterialApp> {
   Widget build(BuildContext context) {
 
     Widget home = new HomePage(
-      title: 'News',
       appTheme: _appTheme,
       onThemeChanged: (AppThemes value) {
         setState(() {

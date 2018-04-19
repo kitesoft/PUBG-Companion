@@ -6,11 +6,15 @@ class FontAwesomeIcons {
   // Drawer
   static const IconData cog = const _IconDataSolid(0xf013);
 
+  // Bottom navigation
+  static const IconData newspaper = const _IconDataSolid(0xf1ea);
+  static const IconData crosshairs = const _IconDataRegular(0xf05b);
+
   // Settings page
   static const IconData moon = const _IconDataSolid(0xf186);
   static const IconData sun = const _IconDataSolid(0xf185);
 
-  // Home page
+  // Tweets page
   static const IconData link = const _IconDataSolid(0xf0c1);
   static const IconData play = const _IconDataSolid(0xf04b);
 }

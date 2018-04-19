@@ -74,7 +74,10 @@ class _TweetsListState extends State<TweetsList> {
     DateTime yesterdayStart = todayStart.subtract(const Duration(days: 1));
     String str = '';
 
-    if (tweetLocalDate.isAfter(todayStart) ||
+    if (tweetLocalDate.difference(DateTime.now()).inHours.abs() < 12) {
+      str =
+          tweetLocalDate.difference(DateTime.now()).inMinutes.abs().toString() + ' minutes ago';
+    } else if (tweetLocalDate.isAfter(todayStart) ||
         tweetLocalDate.difference(DateTime.now()).inHours.abs() <= 12) {
       int hours =
           (DateTime.now().difference(tweetLocalDate).inMinutes / 60).round();
@@ -218,7 +221,8 @@ class _TweetsListState extends State<TweetsList> {
       // TODO: check about videos
       if (tweetMedia[i].mediaType == 'photo') {
         urls.add(tweetMedia[i].mediaUrl);
-      } else if (tweetMedia[i].mediaType == 'animated_gif') {
+      } else if (tweetMedia[i].mediaType == 'animated_gif' ||
+          tweetMedia[i].mediaType == 'video') {
         urls.add(tweetMedia[i].mediaUrl);
       } else {
         print(tweetMedia[i].mediaType);
@@ -230,7 +234,8 @@ class _TweetsListState extends State<TweetsList> {
         placeholder: kTransparentImage,
         image: urls[0],
       );
-    } else if (tweetMedia[0].mediaType == 'animated_gif') {
+    } else if (tweetMedia[0].mediaType == 'animated_gif' ||
+        tweetMedia[0].mediaType == 'video') {
       _media = new Stack(
         children: <Widget>[
           new FadeInImage.memoryNetwork(
@@ -291,69 +296,81 @@ class _TweetsListState extends State<TweetsList> {
         itemCount: tweets.length,
         itemBuilder: (context, index) {
           return new Column(children: <Widget>[
-            new GestureDetector(
-              child: new Container(
-                child: new Column(
-                  children: <Widget>[
-                    new ListTile(
-                      title: _displayDate(tweets[index].createdAt),
-                      subtitle: new Text(tweets[index].text),
-                    ),
-                    (tweets[index].tweetEntities.tweetUrls.length == 0 ||
-                            tweets[index]
-                                .tweetEntities
-                                .tweetUrls[0]
-                                .expandedUrl
-                                .contains(tweets[index].idStr))
-                        ? new Container(
-                            height: 0.0,
-                            width: 0.0,
-                          )
-                        : new FutureBuilder<Link>(
-                            future: _fetchLink(
-                                tweets[index].tweetEntities.tweetUrls[0].url),
-                            builder: (context, snapshot) {
-                              if (snapshot.hasData) {
-                                return _buildLinkContainer(
-                                    context,
-                                    snapshot.data.image,
-                                    snapshot.data.title,
-                                    snapshot.data.description,
-                                    tweets[index]
-                                        .tweetEntities
-                                        .tweetUrls[0]
-                                        .url);
-                              } else if (snapshot.hasError) {
-                                return new Text("${snapshot.error}");
-                              }
+            new Tooltip(
+              message: 'Show Tweet in Browser',
+              child: new InkWell(
+                child: new Container(
+                  child: new Column(
+                    children: <Widget>[
+                      new ListTile(
+                        title: _displayDate(tweets[index].createdAt),
+                        subtitle: new Text(tweets[index].text),
+                      ),
+                      (tweets[index].tweetEntities.tweetUrls.length == 0 ||
+                              tweets[index]
+                                  .tweetEntities
+                                  .tweetUrls[0]
+                                  .expandedUrl
+                                  .contains(tweets[index].idStr))
+                          ? new Container(
+                              height: 0.0,
+                              width: 0.0,
+                            )
+                          : new FutureBuilder<Link>(
+                              future: _fetchLink(
+                                  tweets[index].tweetEntities.tweetUrls[0].url),
+                              builder: (context, snapshot) {
+                                if (snapshot.hasData) {
+                                  return new Tooltip(
+                                    message: 'Open Link in Browser',
+                                    child: new InkWell(
+                                      onTap: () {
+                                        _launched =
+                                            _launchInBrowser(snapshot.data.url);
+                                      },
+                                      child: _buildLinkContainer(
+                                          context,
+                                          snapshot.data.image,
+                                          snapshot.data.title,
+                                          snapshot.data.description,
+                                          tweets[index]
+                                              .tweetEntities
+                                              .tweetUrls[0]
+                                              .url),
+                                    ),
+                                  );
+                                } else if (snapshot.hasError) {
+                                  return new Text("${snapshot.error}");
+                                }
 
-                              // By default, show a loading spinner
-                              return new CircularProgressIndicator();
-                            },
-                          ),
-                    tweets[index].tweetExtendedEntities == null
-                        ? new Container(
-                            height: 0.0,
-                            width: 0.0,
-                          )
-                        : _showTweetMedia(context,
-                            tweets[index].tweetExtendedEntities.tweetMedia)
-                  ],
+                                // By default, show a loading spinner
+                                return new CircularProgressIndicator();
+                              },
+                            ),
+                      tweets[index].tweetExtendedEntities == null
+                          ? new Container(
+                              height: 0.0,
+                              width: 0.0,
+                            )
+                          : _showTweetMedia(context,
+                              tweets[index].tweetExtendedEntities.tweetMedia)
+                    ],
+                  ),
                 ),
-              ),
-              onTap: () {
-                print('https://twitter.com/' +
-                    'PUBGMobile' +
-                    '/status/' +
-                    tweets[index].idStr);
-                setState(() {
-                  // TODO: replace 'PUBGMobile' with tweet actual username
-                  _launched = _launchInBrowser('https://twitter.com/' +
+                onTap: () {
+                  print('https://twitter.com/' +
                       'PUBGMobile' +
                       '/status/' +
                       tweets[index].idStr);
-                });
-              },
+                  setState(() {
+                    // TODO: replace 'PUBGMobile' with tweet actual username
+                    _launched = _launchInBrowser('https://twitter.com/' +
+                        'PUBGMobile' +
+                        '/status/' +
+                        tweets[index].idStr);
+                  });
+                },
+              ),
             ),
             new Divider(
               height: 20.0,
