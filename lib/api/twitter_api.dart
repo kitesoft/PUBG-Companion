@@ -15,7 +15,6 @@ class TwitterApi{
     var response = await twitter.request("GET",
         "statuses/user_timeline.json?screen_name=PUBGMOBILE&count=200&include_rts=false&exclude_replies=true");
 
-    print(response.body.substring(100));
     return parseTweets(response.body);
   }
 

@@ -29,7 +29,6 @@ class _TweetsListState extends State<TweetsList> {
 
   Future<Null> _handleRefresh() async {
     Completer _completer = new Completer();
-    Tweet temp = tweets[5];
 
     tweets.clear();
 
@@ -74,9 +73,10 @@ class _TweetsListState extends State<TweetsList> {
     DateTime yesterdayStart = todayStart.subtract(const Duration(days: 1));
     String str = '';
 
-    if (tweetLocalDate.difference(DateTime.now()).inHours.abs() < 12) {
+    if (tweetLocalDate.difference(DateTime.now()).inHours.abs() < 1) {
       str =
-          tweetLocalDate.difference(DateTime.now()).inMinutes.abs().toString() + ' minutes ago';
+          tweetLocalDate.difference(DateTime.now()).inMinutes.abs().toString() +
+              ' minutes ago';
     } else if (tweetLocalDate.isAfter(todayStart) ||
         tweetLocalDate.difference(DateTime.now()).inHours.abs() <= 12) {
       int hours =
@@ -218,7 +218,6 @@ class _TweetsListState extends State<TweetsList> {
     List<String> urls = [];
 
     for (int i = 0; i < tweetMedia.length; i++) {
-      // TODO: check about videos
       if (tweetMedia[i].mediaType == 'photo') {
         urls.add(tweetMedia[i].mediaUrl);
       } else if (tweetMedia[i].mediaType == 'animated_gif' ||
@@ -260,8 +259,6 @@ class _TweetsListState extends State<TweetsList> {
   }
 
   // Link Handling
-  Future<Null> _launched;
-
   Future<Null> _launchInBrowser(String url) async {
     if (await canLaunch(url)) {
       await launch(url, forceSafariVC: false, forceWebView: false);
@@ -269,6 +266,8 @@ class _TweetsListState extends State<TweetsList> {
       throw 'Could not launch $url';
     }
   }
+
+  /*Future<Null> _launched;
 
   Future<Null> _launchInWebViewOrVC(String url) async {
     if (await canLaunch(url)) {
@@ -284,7 +283,7 @@ class _TweetsListState extends State<TweetsList> {
     } else {
       return const Text('');
     }
-  }
+  }*/
   // End of link handling
 
   @override
@@ -325,8 +324,7 @@ class _TweetsListState extends State<TweetsList> {
                                     message: 'Open Link in Browser',
                                     child: new InkWell(
                                       onTap: () {
-                                        _launched =
-                                            _launchInBrowser(snapshot.data.url);
+                                        _launchInBrowser(snapshot.data.url);
                                       },
                                       child: _buildLinkContainer(
                                           context,
@@ -358,13 +356,9 @@ class _TweetsListState extends State<TweetsList> {
                   ),
                 ),
                 onTap: () {
-                  print('https://twitter.com/' +
-                      'PUBGMobile' +
-                      '/status/' +
-                      tweets[index].idStr);
                   setState(() {
                     // TODO: replace 'PUBGMobile' with tweet actual username
-                    _launched = _launchInBrowser('https://twitter.com/' +
+                    _launchInBrowser('https://twitter.com/' +
                         'PUBGMobile' +
                         '/status/' +
                         tweets[index].idStr);

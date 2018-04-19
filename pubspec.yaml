@@ -104,3 +104,6 @@ flutter:
       fonts:
         - asset: assets/fonts/FontAwesome/fa-light-300.ttf
           weight: 300
+    - family: GovIcons
+      fonts:
+        - asset: assets/fonts/GovIcons/govicons-webfont.ttf
