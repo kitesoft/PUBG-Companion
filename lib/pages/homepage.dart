@@ -45,7 +45,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   // Start of pages
-  static Widget _tweetsPage = NewsPag(
+  static Widget _tweetsPage = NewsPage(
     scaffoldKey: _scaffoldKey,
   );
 
