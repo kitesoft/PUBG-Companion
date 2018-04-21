@@ -33,8 +33,53 @@ flutter:
   # assets:
   #  - images/a_dot_burr.jpeg
   #  - images/a_dot_ham.jpeg
+
   assets:
-    - assets/images/PUBG_Header.png
+    # Weapons
+    - assets/images/weapons/AKM.png
+    - assets/images/weapons/AUG_A3.png
+    - assets/images/weapons/AWM.png
+    - assets/images/weapons/Crossbow.png
+    - assets/images/weapons/Crowbar.png
+    - assets/images/weapons/DP-28.png
+    - assets/images/weapons/Groza.png
+    - assets/images/weapons/Kar98k.png
+    - assets/images/weapons/M16A4.png
+    - assets/images/weapons/M24.png
+    - assets/images/weapons/M249.png
+    - assets/images/weapons/M416.png
+    - assets/images/weapons/Machete.png
+    - assets/images/weapons/Mini_14.png
+    - assets/images/weapons/MK14.png
+    - assets/images/weapons/P18C.png
+    - assets/images/weapons/P92.png
+    - assets/images/weapons/P1911.png
+    - assets/images/weapons/Pan.png
+    - assets/images/weapons/Punch.png
+    - assets/images/weapons/R45.png
+    - assets/images/weapons/R1895.png
+    - assets/images/weapons/S12K.png
+    - assets/images/weapons/S686.png
+    - assets/images/weapons/S1897.png
+    - assets/images/weapons/Sawed_Off.png
+    - assets/images/weapons/SCAR-L.png
+    - assets/images/weapons/Sickle.png
+    - assets/images/weapons/SKS.png
+    - assets/images/weapons/Superman_Punch.png
+    - assets/images/weapons/Tommy_Gun.png
+    - assets/images/weapons/UMP9.png
+    - assets/images/weapons/UZI.png
+    - assets/images/weapons/Vector.png
+    - assets/images/weapons/VSS.png
+    - assets/images/weapons/Win94.png
+    # Ammo
+    - assets/images/ammo/9mm.png
+    - assets/images/ammo/12_Gauge.png
+    - assets/images/ammo/45_ACP.png
+    - assets/images/ammo/300_Magnum.png
+    - assets/images/ammo/556mm.png
+    - assets/images/ammo/762mm.png
+    - assets/images/ammo/Bolt.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.io/assets-and-images/#resolution-aware.

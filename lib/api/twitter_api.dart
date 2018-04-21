@@ -4,7 +4,7 @@ import 'dart:convert';
 import 'package:pubg_companion/models/tweet.dart';
 import 'package:twitter/twitter.dart';
 
-class TwitterApi{
+class TwitterApi {
   static Future<List<Tweet>> fetchTweets() async {
     final Twitter twitter = new Twitter(
         '4y9EBqgIt1quyWEOkof6PTJS8',

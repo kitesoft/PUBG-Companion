@@ -215,6 +215,7 @@ class _TweetsListState extends State<TweetsList> {
   Widget _showTweetMedia(BuildContext context, List<TweetMedia> tweetMedia) {
     Widget _media;
     // TODO: return grid with multiple images if exists
+    // TODO: check about missing images in some of the tweets
     List<String> urls = [];
 
     for (int i = 0; i < tweetMedia.length; i++) {

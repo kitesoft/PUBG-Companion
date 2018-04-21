@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:pubg_companion/pages/homepage.dart';
-import 'package:pubg_companion/pages/settings.dart';
+import 'package:pubg_companion/pages/home_page.dart';
+import 'package:pubg_companion/pages/settings_page.dart';
 import 'package:pubg_companion/utils/app_themes.dart';
 
 void main() => runApp(new MyMaterialApp());
