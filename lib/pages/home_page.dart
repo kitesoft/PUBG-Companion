@@ -17,6 +17,8 @@ class HomePage extends StatefulWidget {
   final AppThemes appTheme;
   final ValueChanged<AppThemes> onThemeChanged;
 
+  static String sortRadioValue;
+
   @override
   _HomePageState createState() => new _HomePageState();
 }
@@ -26,6 +28,12 @@ class _HomePageState extends State<HomePage> {
   String _currentTitle;
   Widget _currentPage;
   int _currentIndex;
+
+  void _handleSortChanged(String value) {
+    setState(() {
+      HomePage.sortRadioValue = value;
+    });
+  }
 
   List<DrawerNavigationItem> _drawerItems = [
     new DrawerNavigationItem(title: 'Test', routeName: SettingsPage.routeName),
@@ -43,6 +51,8 @@ class _HomePageState extends State<HomePage> {
     _currentIndex = 0;
     _currentTitle = _pages[_currentIndex].title;
     _currentPage = _pages[_currentIndex].pageWidget;
+
+    HomePage.sortRadioValue = 'name';
   }
 
   // Start of pages
@@ -65,6 +75,22 @@ class _HomePageState extends State<HomePage> {
         icon: new Icon(GovIcons.gun)),
   ];
   // End of pages
+
+  void _showSortDialog<T>({BuildContext context, Widget child}) {
+    showDialog<T>(
+      context: context,
+      builder: (BuildContext context) => child,
+    ).then<void>((T value) {
+      // The value passed to Navigator.pop() or null.
+      if (value != null) {
+        _scaffoldKey.currentState.showSnackBar(new SnackBar(
+          content: new Text(
+            'Sorting weapons by ' + value.toString().toLowerCase(),
+          ),
+        ));
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -117,6 +143,80 @@ class _HomePageState extends State<HomePage> {
                   .map((page) => new BottomNavigationBarItem(
                       title: new Text(page.title), icon: page.icon))
                   .toList()),
+          floatingActionButton: _currentIndex == 1
+              ? new FloatingActionButton(
+                  child: new Icon(FontAwesomeIcons.sort_amount_up),
+                  onPressed: () {
+                    _showSortDialog<String>(
+                        context: context,
+                        child: new SimpleDialog(
+                            title: const Text('Sort weapons by...'),
+                            children: <Widget>[
+                              new SimpleDialogOption(
+                                child: new Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: <Widget>[
+                                    new Radio<String>(
+                                      value: 'name',
+                                      groupValue: HomePage.sortRadioValue,
+                                      onChanged: _handleSortChanged,
+                                    ),
+                                    new Icon(FontAwesomeIcons.sort_alpha_down,
+                                        size: 20.0,
+                                        color: Theme.of(context).accentColor),
+                                    new Padding(
+                                      padding:
+                                          const EdgeInsets.only(left: 16.0),
+                                      child: new Text(
+                                        'Name',
+                                        style: AppTextStyles.weaponsSortOption,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                onPressed: () {
+                                  setState(() {
+                                    HomePage.sortRadioValue = 'name';
+                                  });
+                                  Navigator.pop(context, 'Name');
+                                },
+                              ),
+                              new SimpleDialogOption(
+                                child: new Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: <Widget>[
+                                    new Radio<String>(
+                                      value: 'damage',
+                                      groupValue: HomePage.sortRadioValue,
+                                      onChanged: _handleSortChanged,
+                                    ),
+                                    new Icon(GovIcons.poison,
+                                        size: 20.0,
+                                        color: Theme.of(context).accentColor),
+                                    new Padding(
+                                      padding:
+                                          const EdgeInsets.only(left: 16.0),
+                                      child: new Text(
+                                        'Damage',
+                                        style: AppTextStyles.weaponsSortOption,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                onPressed: () {
+                                  setState(() {
+                                    HomePage.sortRadioValue = 'damage';
+                                  });
+
+                                  Navigator.pop(context, 'Damage');
+                                },
+                              ),
+                            ]));
+                  },
+                )
+              : null,
         ),
       ),
     );

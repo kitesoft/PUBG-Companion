@@ -67,8 +67,8 @@ class _WeaponsPageState extends State<WeaponsPage> {
                   tabs: new List.generate(weaponFamilies.length, (index) {
                     return new Container(
                         height: 55.0,
-                        child: new Tab(
-                            text: weaponFamilies[index].toUpperCase()));
+                        child:
+                            new Tab(text: weaponFamilies[index].toUpperCase()));
                   }),
                 ),
               ),

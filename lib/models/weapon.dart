@@ -8,6 +8,7 @@ class Weapon {
   final int bulletSpeed;
   final double reload;
   final int range;
+  final double scopedSpread;
   final bool crateOnly;
   final bool mobile;
 
@@ -21,6 +22,7 @@ class Weapon {
       this.bulletSpeed,
       this.reload,
       this.range,
+      this.scopedSpread,
       this.crateOnly,
       this.mobile});
 
@@ -35,6 +37,7 @@ class Weapon {
       bulletSpeed: json['bulletspeed'],
       reload: double.parse(json['reload'].toString()),
       range: json['range'],
+      scopedSpread: double.parse(json['scopedspread'].toString()),
       crateOnly: json['crateonly'].toString().toUpperCase() == 'TRUE',
       mobile: json['mobile'].toString().toUpperCase() == 'TRUE',
     );

@@ -2,7 +2,7 @@ library font_awesome_icon_data;
 
 import 'package:flutter/widgets.dart';
 
-class FontAwesomeIcons {
+abstract class FontAwesomeIcons {
   // Drawer
   static const IconData cog = const _IconDataSolid(0xf013);
 
@@ -17,6 +17,13 @@ class FontAwesomeIcons {
   // Tweets page
   static const IconData link = const _IconDataSolid(0xf0c1);
   static const IconData play = const _IconDataSolid(0xf04b);
+
+  // Weapons page
+  static const IconData sort_amount_up = const _IconDataSolid(0xf161);
+  static const IconData sort_alpha_down = const _IconDataRegular(0xf15d);
+  static const IconData bullseye = const _IconDataSolid(0xf140);
+  static const IconData fire = const _IconDataSolid(0xf06d);
+  static const IconData arrows_alt = const _IconDataSolid(0xf0b2);
 }
 
 class _IconDataBrands extends IconData {
