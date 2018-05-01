@@ -27,7 +27,6 @@ class _MyMaterialAppState extends State<MyMaterialApp> {
 
   @override
   Widget build(BuildContext context) {
-
     Widget home = new HomePage(
       appTheme: _appTheme,
       onThemeChanged: (AppThemes value) {
@@ -50,7 +49,7 @@ class _MyMaterialAppState extends State<MyMaterialApp> {
                     _appTheme = value;
                   });
                 },
-              )
+              ),
         });
   }
 }

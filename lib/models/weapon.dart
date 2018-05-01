@@ -11,6 +11,11 @@ class Weapon {
   final double scopedSpread;
   final bool crateOnly;
   final bool mobile;
+  final String fullName;
+  final String manufacturer;
+  final String country;
+  final String countryFull;
+  final int year;
 
   Weapon(
       {this.name,
@@ -24,7 +29,12 @@ class Weapon {
       this.range,
       this.scopedSpread,
       this.crateOnly,
-      this.mobile});
+      this.mobile,
+      this.fullName,
+      this.manufacturer,
+      this.country,
+      this.countryFull,
+      this.year});
 
   factory Weapon.fromJson(Map<String, dynamic> json) {
     return new Weapon(
@@ -40,6 +50,11 @@ class Weapon {
       scopedSpread: double.parse(json['scopedspread'].toString()),
       crateOnly: json['crateonly'].toString().toUpperCase() == 'TRUE',
       mobile: json['mobile'].toString().toUpperCase() == 'TRUE',
+      fullName: json['fullname'] ?? null,
+      manufacturer: json['manufacturer'] ?? null,
+      country: json['country'] ?? null,
+      countryFull: json['countryfull'] ?? null,
+      year: json['year'] != 'None' ? json['year'] : 0,
     );
   }
 }

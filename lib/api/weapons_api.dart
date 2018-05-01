@@ -6,7 +6,7 @@ import 'package:pubg_companion/models/weapon.dart';
 class WeaponsApi {
   static Future<List<Weapon>> fetchWeapons(String family) async {
     final response = await http.get(
-        'http://gsx2json.com/api?id=1KJ8vCdNnksEtZFY7vDgS4kAt7bAAq8ZTK7WMQ58hWh0&sheet=1&columns=false&q=$family');
+        'http://gsx2json.us-east-2.elasticbeanstalk.com/api?id=1KJ8vCdNnksEtZFY7vDgS4kAt7bAAq8ZTK7WMQ58hWh0&sheet=1&columns=false&q=$family');
     final responseJson = json.decode(response.body)['rows'];
 
     return weaponsList(responseJson);

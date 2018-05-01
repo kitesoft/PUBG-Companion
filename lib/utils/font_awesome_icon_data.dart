@@ -8,7 +8,6 @@ abstract class FontAwesomeIcons {
 
   // Bottom navigation
   static const IconData newspaper = const _IconDataSolid(0xf1ea);
-  static const IconData crosshairs = const _IconDataRegular(0xf05b);
 
   // Settings page
   static const IconData moon = const _IconDataSolid(0xf186);
@@ -19,11 +18,14 @@ abstract class FontAwesomeIcons {
   static const IconData play = const _IconDataSolid(0xf04b);
 
   // Weapons page
-  static const IconData sort_amount_up = const _IconDataSolid(0xf161);
   static const IconData sort_alpha_down = const _IconDataRegular(0xf15d);
   static const IconData bullseye = const _IconDataSolid(0xf140);
   static const IconData fire = const _IconDataSolid(0xf06d);
   static const IconData arrows_alt = const _IconDataSolid(0xf0b2);
+
+  // Weapon Info page
+  static const IconData crosshairs = const _IconDataLight(0xf05b);
+  static const IconData bullseye_light = const _IconDataLight(0xf140);
 }
 
 class _IconDataBrands extends IconData {

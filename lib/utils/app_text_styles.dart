@@ -18,4 +18,10 @@ abstract class AppTextStyles {
       color: Colors.blueGrey);
   static TextStyle weaponsSortOption = new TextStyle(
       fontFamily: 'Assistant', fontWeight: FontWeight.w400, fontSize: 16.0);
+  static TextStyle weaponInfoHeader = new TextStyle(
+      fontFamily: 'Teko', fontWeight: FontWeight.w600, fontSize: 55.0);
+  static TextStyle weaponInfoSubheader = new TextStyle(
+      fontFamily: 'Teko', fontWeight: FontWeight.w400, fontSize: 30.0);
+  static TextStyle weaponInfoManufacturer = new TextStyle(
+      fontFamily: 'Teko', fontWeight: FontWeight.w400, fontSize: 25.0);
 }

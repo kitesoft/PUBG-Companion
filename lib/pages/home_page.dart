@@ -29,11 +29,7 @@ class _HomePageState extends State<HomePage> {
   Widget _currentPage;
   int _currentIndex;
 
-  void _handleSortChanged(String value) {
-    setState(() {
-      HomePage.sortRadioValue = value;
-    });
-  }
+  void _handleSortChanged(String value) {}
 
   List<DrawerNavigationItem> _drawerItems = [
     new DrawerNavigationItem(title: 'Test', routeName: SettingsPage.routeName),
@@ -85,11 +81,31 @@ class _HomePageState extends State<HomePage> {
       if (value != null) {
         _scaffoldKey.currentState.showSnackBar(new SnackBar(
           content: new Text(
-            'Sorting weapons by ' + value.toString().toLowerCase(),
+            'Sorting weapons by ' + value.toString().toLowerCase() + '.',
           ),
         ));
       }
     });
+  }
+
+  Widget _getSortIcon() {
+    switch (HomePage.sortRadioValue) {
+      case 'name':
+        return new Icon(FontAwesomeIcons.sort_alpha_down);
+      case 'damage':
+        return new Container(
+            padding: EdgeInsets.only(right: 8.5, bottom: 2.0),
+            child: new Icon(
+              GovIcons.poison,
+              size: 30.0,
+            ));
+      case 'accuracy':
+        return new Icon(FontAwesomeIcons.bullseye);
+      case 'range':
+        return new Icon(FontAwesomeIcons.arrows_alt);
+      default:
+        return new Icon(FontAwesomeIcons.sort_alpha_down);
+    }
   }
 
   @override
@@ -145,7 +161,7 @@ class _HomePageState extends State<HomePage> {
                   .toList()),
           floatingActionButton: _currentIndex == 1
               ? new FloatingActionButton(
-                  child: new Icon(FontAwesomeIcons.sort_amount_up),
+                  child: _getSortIcon(),
                   onPressed: () {
                     _showSortDialog<String>(
                         context: context,
@@ -178,6 +194,9 @@ class _HomePageState extends State<HomePage> {
                                 onPressed: () {
                                   setState(() {
                                     HomePage.sortRadioValue = 'name';
+                                    _currentPage = new WeaponsPage(
+                                      scaffoldKey: _scaffoldKey,
+                                    );
                                   });
                                   Navigator.pop(context, 'Name');
                                 },
@@ -208,9 +227,78 @@ class _HomePageState extends State<HomePage> {
                                 onPressed: () {
                                   setState(() {
                                     HomePage.sortRadioValue = 'damage';
+                                    _currentPage = new WeaponsPage(
+                                      scaffoldKey: _scaffoldKey,
+                                    );
                                   });
 
                                   Navigator.pop(context, 'Damage');
+                                },
+                              ),
+                              new SimpleDialogOption(
+                                child: new Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: <Widget>[
+                                    new Radio<String>(
+                                      value: 'accuracy',
+                                      groupValue: HomePage.sortRadioValue,
+                                      onChanged: _handleSortChanged,
+                                    ),
+                                    new Icon(FontAwesomeIcons.bullseye,
+                                        size: 20.0,
+                                        color: Theme.of(context).accentColor),
+                                    new Padding(
+                                      padding:
+                                          const EdgeInsets.only(left: 16.0),
+                                      child: new Text(
+                                        'Accuracy',
+                                        style: AppTextStyles.weaponsSortOption,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                onPressed: () {
+                                  setState(() {
+                                    HomePage.sortRadioValue = 'accuracy';
+                                    _currentPage = new WeaponsPage(
+                                      scaffoldKey: _scaffoldKey,
+                                    );
+                                  });
+                                  Navigator.pop(context, 'Accuracy');
+                                },
+                              ),
+                              new SimpleDialogOption(
+                                child: new Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: <Widget>[
+                                    new Radio<String>(
+                                      value: 'range',
+                                      groupValue: HomePage.sortRadioValue,
+                                      onChanged: _handleSortChanged,
+                                    ),
+                                    new Icon(FontAwesomeIcons.arrows_alt,
+                                        size: 20.0,
+                                        color: Theme.of(context).accentColor),
+                                    new Padding(
+                                      padding:
+                                          const EdgeInsets.only(left: 16.0),
+                                      child: new Text(
+                                        'Range',
+                                        style: AppTextStyles.weaponsSortOption,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                onPressed: () {
+                                  setState(() {
+                                    HomePage.sortRadioValue = 'range';
+                                    _currentPage = new WeaponsPage(
+                                      scaffoldKey: _scaffoldKey,
+                                    );
+                                  });
+                                  Navigator.pop(context, 'Range');
                                 },
                               ),
                             ]));

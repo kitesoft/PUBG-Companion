@@ -80,6 +80,9 @@ flutter:
     - assets/images/ammo/556mm.png
     - assets/images/ammo/762mm.png
     - assets/images/ammo/Bolt.png
+    # Flags
+    - assets/images/flags/ussr.png
+    - assets/images/flags/nazi.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.io/assets-and-images/#resolution-aware.
