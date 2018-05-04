@@ -24,8 +24,10 @@ abstract class FontAwesomeIcons {
   static const IconData arrows_alt = const _IconDataSolid(0xf0b2);
 
   // Weapon Info page
-  static const IconData crosshairs = const _IconDataLight(0xf05b);
   static const IconData bullseye_light = const _IconDataLight(0xf140);
+  static const IconData info = const _IconDataSolid(0xf129);
+  static const IconData images = const _IconDataSolid(0xf302);
+  static const IconData wikipedia_w = const _IconDataBrands(0xf266);
 }
 
 class _IconDataBrands extends IconData {

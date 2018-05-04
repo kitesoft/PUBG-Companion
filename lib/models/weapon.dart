@@ -16,6 +16,8 @@ class Weapon {
   final String country;
   final String countryFull;
   final int year;
+  final String wikipediaSummary;
+  final String wikipediaLink;
 
   Weapon(
       {this.name,
@@ -34,7 +36,9 @@ class Weapon {
       this.manufacturer,
       this.country,
       this.countryFull,
-      this.year});
+      this.year,
+      this.wikipediaSummary,
+      this.wikipediaLink});
 
   factory Weapon.fromJson(Map<String, dynamic> json) {
     return new Weapon(
@@ -55,6 +59,11 @@ class Weapon {
       country: json['country'] ?? null,
       countryFull: json['countryfull'] ?? null,
       year: json['year'] != 'None' ? json['year'] : 0,
+      wikipediaSummary: json['wikipediasummary'] == 'None'
+          ? 'None'
+          : json['wikipediasummary'],
+      wikipediaLink:
+          json['wikipedialink'] == 'None' ? 'None' : json['wikipediaLink'],
     );
   }
 }

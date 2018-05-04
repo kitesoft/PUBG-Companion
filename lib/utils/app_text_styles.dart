@@ -24,4 +24,8 @@ abstract class AppTextStyles {
       fontFamily: 'Teko', fontWeight: FontWeight.w400, fontSize: 30.0);
   static TextStyle weaponInfoManufacturer = new TextStyle(
       fontFamily: 'Teko', fontWeight: FontWeight.w400, fontSize: 25.0);
+  static TextStyle weaponInfoHeaderRow = new TextStyle(
+      fontFamily: 'Assistant', fontWeight: FontWeight.w600, fontSize: 20.0);
+  static TextStyle weaponInfoRow = new TextStyle(
+      fontFamily: 'Assistant', fontWeight: FontWeight.w400, fontSize: 18.0);
 }

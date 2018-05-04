@@ -15,7 +15,7 @@ final List<AppThemes> kAllAppThemes = <AppThemes>[
     icon: FontAwesomeIcons.moon,
     theme: new ThemeData(
         primaryColor: const Color(0xFF1D2027),
-        accentColor: const Color(0xFFf3A03A),
+        accentColor: const Color(0xFFF3A03A),
         scaffoldBackgroundColor: const Color(0xFF0F0F19),
         accentIconTheme: const IconThemeData(color: Colors.white),
         dividerColor: const Color(0xFF95969A),

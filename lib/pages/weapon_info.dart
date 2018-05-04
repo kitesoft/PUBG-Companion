@@ -50,10 +50,8 @@ class WeaponInfo extends StatelessWidget {
         ],
       ),
       body: new Container(
-        padding: EdgeInsets.only(top: 5.0),
         constraints: new BoxConstraints.expand(),
-        child: new Column(
-          mainAxisAlignment: MainAxisAlignment.start,
+        child: new ListView(
           children: <Widget>[
             new Center(
               child: new Stack(
@@ -85,17 +83,21 @@ class WeaponInfo extends StatelessWidget {
             ),
             new Container(
               constraints: new BoxConstraints(maxHeight: 60.0),
-              child: new Text(
-                weapon.name,
-                style: AppTextStyles.weaponInfoHeader,
+              child: new Center(
+                child: new Text(
+                  weapon.name,
+                  style: AppTextStyles.weaponInfoHeader,
+                ),
               ),
             ),
             new Container(
               constraints: new BoxConstraints(maxHeight: 37.5),
-              child: new Text(
-                weapon.fullName,
-                style: AppTextStyles.weaponInfoSubheader,
-                maxLines: 1,
+              child: new Center(
+                child: new Text(
+                  weapon.fullName,
+                  style: AppTextStyles.weaponInfoSubheader,
+                  maxLines: 1,
+                ),
               ),
             ),
             new Row(
@@ -112,6 +114,107 @@ class WeaponInfo extends StatelessWidget {
                     ),
                   ],
             ),
+            new Container(
+              color: new Color(0xFF171a25),
+              height: 400.0,
+              margin: EdgeInsets.only(top: 10.0),
+              child: new Column(
+                children: <Widget>[
+                  new Stack(
+                    children: <Widget>[
+                      new Image(
+                        height: 40.0,
+                        image:
+                            new AssetImage('assets/images/ui/header_row.png'),
+                        fit: BoxFit.fitHeight,
+                      ),
+                      new Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          new Icon(
+                            FontAwesomeIcons.info,
+                            color: Theme.of(context).accentColor,
+                            size: 20.0,
+                          ),
+                          new Container(
+                            padding: EdgeInsets.only(top: 2.0, left: 5.0),
+                            child: new Text(
+                              'Info'.toUpperCase(),
+                              style: AppTextStyles.weaponInfoHeaderRow,
+                            ),
+                          ),
+                        ],
+                      )
+                    ],
+                  ),
+                  new Column(
+                    children: <Widget>[
+                      new Row(
+                        children: <Widget>[
+                          new Expanded(
+                            child: new Padding(
+                              padding: EdgeInsets.only(top: 15.0, left: 15.0, right: 15.0),
+                              child: new Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: <Widget>[
+                                  new Flexible(
+                                    child: new Column(
+                                      children: <Widget>[
+                                        new Text(
+                                          weapon.wikipediaSummary,
+                                          maxLines: 3,
+                                          overflow: TextOverflow.fade,
+                                          style: AppTextStyles.weaponInfoRow,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  )
+                ],
+              ),
+            ),
+            new Container(
+              color: Theme.of(context).scaffoldBackgroundColor,
+              height: 400.0,
+              child: new Column(
+                children: <Widget>[
+                  new Stack(
+                    children: <Widget>[
+                      new Image(
+                        height: 40.0,
+                        image: new AssetImage(
+                            'assets/images/ui/header_row_alt.png'),
+                        fit: BoxFit.fitHeight,
+                      ),
+                      new Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          new Icon(
+                            FontAwesomeIcons.images,
+                            color: Theme.of(context).accentColor,
+                            size: 20.0,
+                          ),
+                          new Container(
+                            padding: EdgeInsets.only(top: 2.0, left: 10.0),
+                            child: new Text(
+                              'Gallery'.toUpperCase(),
+                              style: AppTextStyles.weaponInfoHeaderRow,
+                            ),
+                          ),
+                        ],
+                      )
+                    ],
+                  ),
+                ],
+              ),
+            )
           ],
         ),
       ),
