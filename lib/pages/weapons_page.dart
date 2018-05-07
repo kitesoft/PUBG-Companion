@@ -33,6 +33,8 @@ class _WeaponsPageState extends State<WeaponsPage> {
 
   _WeaponsPageState({this.scaffoldKey});
 
+  // TODO: add info with explanations and units
+
   @override
   void initState() {
     super.initState();
@@ -88,7 +90,8 @@ class _WeaponsPageState extends State<WeaponsPage> {
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: <Widget>[
                       new FutureBuilder<List<Weapon>>(
-                        future: WeaponsApi.fetchWeapons(weaponFamilies[index]),
+                        future: WeaponsApi
+                            .fetchWeapons(weaponFamilies[index] + ' Family'),
                         builder: (context, snapshot) {
                           if (snapshot.hasError) print(snapshot.error);
 

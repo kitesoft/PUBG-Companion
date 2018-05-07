@@ -28,4 +28,6 @@ abstract class AppTextStyles {
       fontFamily: 'Assistant', fontWeight: FontWeight.w600, fontSize: 20.0);
   static TextStyle weaponInfoRow = new TextStyle(
       fontFamily: 'Assistant', fontWeight: FontWeight.w400, fontSize: 18.0);
+  static TextStyle weaponInfoRaisedButton = new TextStyle(
+      fontFamily: 'Assistant', fontWeight: FontWeight.w600, fontSize: 16.0);
 }

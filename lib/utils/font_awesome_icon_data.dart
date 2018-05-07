@@ -26,6 +26,7 @@ abstract class FontAwesomeIcons {
   // Weapon Info page
   static const IconData bullseye_light = const _IconDataLight(0xf140);
   static const IconData info = const _IconDataSolid(0xf129);
+  static const IconData chart_bar = const _IconDataSolid(0xf080);
   static const IconData images = const _IconDataSolid(0xf302);
   static const IconData wikipedia_w = const _IconDataBrands(0xf266);
 }

@@ -161,6 +161,8 @@ class _HomePageState extends State<HomePage> {
                   .toList()),
           floatingActionButton: _currentIndex == 1
               ? new FloatingActionButton(
+            tooltip: 'Sort weapons',
+              isExtended: false,
                   child: _getSortIcon(),
                   onPressed: () {
                     _showSortDialog<String>(

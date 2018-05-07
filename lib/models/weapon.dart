@@ -63,7 +63,7 @@ class Weapon {
           ? 'None'
           : json['wikipediasummary'],
       wikipediaLink:
-          json['wikipedialink'] == 'None' ? 'None' : json['wikipediaLink'],
+          json['wikipedialink'] == 'None' ? 'None' : json['wikipedialink'],
     );
   }
 }

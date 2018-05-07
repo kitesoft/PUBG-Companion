@@ -1,7 +1,10 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:pubg_companion/models/weapon.dart';
 import 'package:pubg_companion/utils/app_text_styles.dart';
 import 'package:pubg_companion/utils/font_awesome_icon_data.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class WeaponInfo extends StatelessWidget {
   final Weapon weapon;
@@ -9,6 +12,14 @@ class WeaponInfo extends StatelessWidget {
   WeaponInfo(this.weapon);
 
   static const String routeName = "/WeaponInfo";
+
+  Future<Null> _launchInBrowser(String url) async {
+    if (await canLaunch(url)) {
+      await launch(url, forceSafariVC: false, forceWebView: false);
+    } else {
+      throw 'Could not launch $url';
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -116,8 +127,7 @@ class WeaponInfo extends StatelessWidget {
             ),
             new Container(
               color: new Color(0xFF171a25),
-              height: 400.0,
-              margin: EdgeInsets.only(top: 10.0),
+              margin: EdgeInsets.only(top: 10.0, bottom: 30.0),
               child: new Column(
                 children: <Widget>[
                   new Stack(
@@ -128,22 +138,25 @@ class WeaponInfo extends StatelessWidget {
                             new AssetImage('assets/images/ui/header_row.png'),
                         fit: BoxFit.fitHeight,
                       ),
-                      new Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: <Widget>[
-                          new Icon(
-                            FontAwesomeIcons.info,
-                            color: Theme.of(context).accentColor,
-                            size: 20.0,
-                          ),
-                          new Container(
-                            padding: EdgeInsets.only(top: 2.0, left: 5.0),
-                            child: new Text(
-                              'Info'.toUpperCase(),
-                              style: AppTextStyles.weaponInfoHeaderRow,
+                      new Padding(
+                        padding: const EdgeInsets.only(top: 3.0),
+                        child: new Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                            new Icon(
+                              FontAwesomeIcons.info,
+                              color: Theme.of(context).accentColor,
+                              size: 20.0,
                             ),
-                          ),
-                        ],
+                            new Container(
+                              padding: EdgeInsets.only(top: 2.0, left: 5.0),
+                              child: new Text(
+                                'Info'.toUpperCase(),
+                                style: AppTextStyles.weaponInfoHeaderRow,
+                              ),
+                            ),
+                          ],
+                        ),
                       )
                     ],
                   ),
@@ -153,7 +166,8 @@ class WeaponInfo extends StatelessWidget {
                         children: <Widget>[
                           new Expanded(
                             child: new Padding(
-                              padding: EdgeInsets.only(top: 15.0, left: 15.0, right: 15.0),
+                              padding: EdgeInsets.only(
+                                  top: 15.0, left: 15.0, right: 15.0),
                               child: new Row(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: <Widget>[
@@ -162,10 +176,69 @@ class WeaponInfo extends StatelessWidget {
                                       children: <Widget>[
                                         new Text(
                                           weapon.wikipediaSummary,
-                                          maxLines: 3,
-                                          overflow: TextOverflow.fade,
+                                          textAlign: TextAlign.center,
                                           style: AppTextStyles.weaponInfoRow,
                                         ),
+                                        new Padding(
+                                          padding: const EdgeInsets.only(
+                                              top: 20.0, bottom: 20.0),
+                                          child: new Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceEvenly,
+                                            children: <Widget>[
+                                              new RaisedButton.icon(
+                                                onPressed: () {
+                                                  _launchInBrowser(
+                                                      weapon.wikipediaLink);
+                                                },
+                                                icon: new Icon(
+                                                  FontAwesomeIcons.wikipedia_w,
+                                                  size: 15.0,
+                                                ),
+                                                label: new Padding(
+                                                  padding:
+                                                      const EdgeInsets.only(
+                                                          left: 8.0),
+                                                  child: new Text(
+                                                    'Wikipedia'.toUpperCase(),
+                                                    style: AppTextStyles
+                                                        .weaponInfoRaisedButton,
+                                                  ),
+                                                ),
+                                                elevation: 3.0,
+                                                highlightElevation: 0.0,
+                                              ),
+                                              new RaisedButton(
+                                                color: Colors.blueGrey[800],
+                                                onPressed: () {
+                                                  _launchInBrowser(
+                                                      'https://pubg.gamepedia.com/${weapon.name}');
+                                                },
+                                                child: new Row(
+                                                  children: <Widget>[
+                                                    new Image(
+                                                        height: 20.0,
+                                                        image: new AssetImage(
+                                                            'assets/images/ui/gamepedia_logo.png')),
+                                                    new Padding(
+                                                      padding:
+                                                          const EdgeInsets.only(
+                                                              left: 8.0),
+                                                      child: new Text(
+                                                        'PUBG Wiki'
+                                                            .toUpperCase(),
+                                                        style: AppTextStyles
+                                                            .weaponInfoRaisedButton,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                                elevation: 3.0,
+                                                highlightElevation: 0.0,
+                                              )
+                                            ],
+                                          ),
+                                        )
                                       ],
                                     ),
                                   ),
@@ -181,35 +254,244 @@ class WeaponInfo extends StatelessWidget {
               ),
             ),
             new Container(
-              color: Theme.of(context).scaffoldBackgroundColor,
-              height: 400.0,
+              color: new Color(0xFF171a25),
+              margin: EdgeInsets.only(bottom: 30.0),
               child: new Column(
                 children: <Widget>[
                   new Stack(
                     children: <Widget>[
                       new Image(
                         height: 40.0,
-                        image: new AssetImage(
-                            'assets/images/ui/header_row_alt.png'),
+                        image:
+                            new AssetImage('assets/images/ui/header_row.png'),
                         fit: BoxFit.fitHeight,
                       ),
+                      new Padding(
+                        padding: const EdgeInsets.only(top: 3.0),
+                        child: new Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                            new Icon(
+                              FontAwesomeIcons.chart_bar,
+                              color: Theme.of(context).accentColor,
+                              size: 20.0,
+                            ),
+                            new Container(
+                              padding: EdgeInsets.only(top: 2.0, left: 7.0),
+                              child: new Text(
+                                'Stats'.toUpperCase(),
+                                style: AppTextStyles.weaponInfoHeaderRow,
+                              ),
+                            ),
+                          ],
+                        ),
+                      )
+                    ],
+                  ),
+                  new Column(
+                    children: <Widget>[
                       new Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
                         children: <Widget>[
-                          new Icon(
-                            FontAwesomeIcons.images,
-                            color: Theme.of(context).accentColor,
-                            size: 20.0,
-                          ),
-                          new Container(
-                            padding: EdgeInsets.only(top: 2.0, left: 10.0),
-                            child: new Text(
-                              'Gallery'.toUpperCase(),
-                              style: AppTextStyles.weaponInfoHeaderRow,
+                          new Expanded(
+                            child: new Padding(
+                              padding: EdgeInsets.only(
+                                  top: 15.0, left: 15.0, right: 15.0),
+                              child: new Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: <Widget>[
+                                  new Flexible(
+                                    child: new Column(
+                                      children: <Widget>[
+                                        new Text(
+                                          weapon.wikipediaSummary,
+                                          textAlign: TextAlign.center,
+                                          style: AppTextStyles.weaponInfoRow,
+                                        ),
+                                        new Padding(
+                                          padding: const EdgeInsets.only(
+                                              top: 20.0, bottom: 20.0),
+                                          child: new Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceEvenly,
+                                            children: <Widget>[
+                                              new RaisedButton.icon(
+                                                onPressed: () {},
+                                                icon: new Icon(
+                                                  FontAwesomeIcons.wikipedia_w,
+                                                  size: 15.0,
+                                                ),
+                                                label: new Padding(
+                                                  padding:
+                                                      const EdgeInsets.only(
+                                                          left: 8.0),
+                                                  child: new Text(
+                                                    'Wikipedia'.toUpperCase(),
+                                                    style: AppTextStyles
+                                                        .weaponInfoRaisedButton,
+                                                  ),
+                                                ),
+                                                elevation: 3.0,
+                                                highlightElevation: 0.0,
+                                              ),
+                                              new RaisedButton(
+                                                color: Colors.blueGrey[800],
+                                                onPressed: () {},
+                                                child: new Row(
+                                                  children: <Widget>[
+                                                    new Image(
+                                                        height: 20.0,
+                                                        image: new AssetImage(
+                                                            'assets/images/ui/gamepedia_logo.png')),
+                                                    new Padding(
+                                                      padding:
+                                                          const EdgeInsets.only(
+                                                              left: 8.0),
+                                                      child: new Text(
+                                                        'PUBG Wiki'
+                                                            .toUpperCase(),
+                                                        style: AppTextStyles
+                                                            .weaponInfoRaisedButton,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                                elevation: 3.0,
+                                                highlightElevation: 0.0,
+                                              )
+                                            ],
+                                          ),
+                                        )
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
                         ],
+                      ),
+                    ],
+                  )
+                ],
+              ),
+            ),
+            new Container(
+              color: new Color(0xFF171a25),
+              margin: EdgeInsets.only(bottom: 30.0),
+              child: new Column(
+                children: <Widget>[
+                  new Stack(
+                    children: <Widget>[
+                      new Image(
+                        height: 40.0,
+                        image:
+                            new AssetImage('assets/images/ui/header_row.png'),
+                        fit: BoxFit.fitHeight,
+                      ),
+                      new Padding(
+                        padding: const EdgeInsets.only(top: 3.0),
+                        child: new Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                            new Icon(
+                              FontAwesomeIcons.images,
+                              color: Theme.of(context).accentColor,
+                              size: 20.0,
+                            ),
+                            new Container(
+                              padding: EdgeInsets.only(top: 2.0, left: 10.0),
+                              child: new Text(
+                                'Gallery'.toUpperCase(),
+                                style: AppTextStyles.weaponInfoHeaderRow,
+                              ),
+                            ),
+                          ],
+                        ),
                       )
+                    ],
+                  ),
+                  new Column(
+                    children: <Widget>[
+                      new Row(
+                        children: <Widget>[
+                          new Expanded(
+                            child: new Padding(
+                              padding: EdgeInsets.only(
+                                  top: 15.0, left: 15.0, right: 15.0),
+                              child: new Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: <Widget>[
+                                  new Flexible(
+                                    child: new Column(
+                                      children: <Widget>[
+                                        new Text(
+                                          weapon.wikipediaSummary,
+                                          textAlign: TextAlign.center,
+                                          style: AppTextStyles.weaponInfoRow,
+                                        ),
+                                        new Padding(
+                                          padding: const EdgeInsets.only(
+                                              top: 20.0, bottom: 20.0),
+                                          child: new Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceEvenly,
+                                            children: <Widget>[
+                                              new RaisedButton.icon(
+                                                onPressed: () {},
+                                                icon: new Icon(
+                                                  FontAwesomeIcons.wikipedia_w,
+                                                  size: 15.0,
+                                                ),
+                                                label: new Padding(
+                                                  padding:
+                                                      const EdgeInsets.only(
+                                                          left: 8.0),
+                                                  child: new Text(
+                                                    'Wikipedia'.toUpperCase(),
+                                                    style: AppTextStyles
+                                                        .weaponInfoRaisedButton,
+                                                  ),
+                                                ),
+                                                elevation: 3.0,
+                                                highlightElevation: 0.0,
+                                              ),
+                                              new RaisedButton(
+                                                color: Colors.blueGrey[800],
+                                                onPressed: () {},
+                                                child: new Row(
+                                                  children: <Widget>[
+                                                    new Image(
+                                                        height: 20.0,
+                                                        image: new AssetImage(
+                                                            'assets/images/ui/gamepedia_logo.png')),
+                                                    new Padding(
+                                                      padding:
+                                                          const EdgeInsets.only(
+                                                              left: 8.0),
+                                                      child: new Text(
+                                                        'PUBG Wiki'
+                                                            .toUpperCase(),
+                                                        style: AppTextStyles
+                                                            .weaponInfoRaisedButton,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                                elevation: 3.0,
+                                                highlightElevation: 0.0,
+                                              )
+                                            ],
+                                          ),
+                                        )
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ],
                   ),
                 ],

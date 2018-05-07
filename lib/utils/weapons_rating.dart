@@ -4,6 +4,9 @@ import 'package:pubg_companion/utils/font_awesome_icon_data.dart';
 import 'package:pubg_companion/utils/govicons_icon_data.dart';
 
 abstract class WeaponsRating {
+  static int _mostDamage = 225;
+  static int _highestRange = 650;
+
   static List<Color> _ratingGradient = [
     new Color(0xFF0578e3), // 1
     new Color(0xFF057edd),
@@ -28,10 +31,69 @@ abstract class WeaponsRating {
   ];
 
   static int weaponDamageValue(Weapon weapon) {
-    return (weapon.damage / 225 * 100).round();
+    return weapon.damage;
   }
 
   static Widget weaponDamageBar(Weapon weapon) {
+    int damageScore =
+        (weaponDamageValue(weapon) / _mostDamage * _ratingGradient.length)
+            .round();
+
+    List<Widget> rating = [];
+
+    for (var i = 0; i < damageScore; i++) {
+      Widget temp = new Container(
+          padding: EdgeInsets.only(right: 0.0),
+          child: new Icon(
+            GovIcons.poison,
+            size: 13.7,
+            color: _ratingGradient[i],
+          ));
+
+      rating.add(temp);
+    }
+
+    Widget damageRatingBar = new Row(
+      children: rating,
+    );
+
+    return damageRatingBar;
+  }
+
+  static int weaponRangeValue(Weapon weapon) {
+    return weapon.range;
+  }
+
+  static Widget weaponRangeBar(Weapon weapon) {
+    int rangeScore =
+        (weaponRangeValue(weapon) / _highestRange * _ratingGradient.length)
+            .round();
+    List<Widget> rating = [];
+
+    for (var i = 0; i < rangeScore; i++) {
+      Widget temp = new Container(
+          padding: EdgeInsets.only(right: 2.7),
+          child: new Icon(
+            FontAwesomeIcons.arrows_alt,
+            size: 11.0,
+            color: _ratingGradient[i],
+          ));
+
+      rating.add(temp);
+    }
+
+    Widget rangeRatingBar = new Row(
+      children: rating,
+    );
+
+    return rangeRatingBar;
+  }
+
+/*  static int weaponDamageValue(Weapon weapon) {
+    return (weapon.damage / 225 * 100).round();
+  }*/
+
+/*  static Widget weaponDamageBar(Weapon weapon) {
     int damage = (weaponDamageValue(weapon) / 5).round();
     List<Widget> rating = [];
 
@@ -52,7 +114,7 @@ abstract class WeaponsRating {
     );
 
     return damageRatingBar;
-  }
+  }*/
 
   static int weaponAccuracyValue(Weapon weapon) {
     return (0.03 / weapon.scopedSpread * 100).round();
@@ -81,7 +143,7 @@ abstract class WeaponsRating {
     return accuracyRatingBar;
   }
 
-  static int weaponRangeValue(Weapon weapon) {
+  /*static int weaponRangeValue(Weapon weapon) {
     return (weapon.range / 650 * 100).round();
   }
 
@@ -106,5 +168,5 @@ abstract class WeaponsRating {
     );
 
     return rangeRatingBar;
-  }
+  }*/
 }
