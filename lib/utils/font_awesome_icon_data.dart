@@ -19,6 +19,7 @@ abstract class FontAwesomeIcons {
 
   // Weapons page
   static const IconData sort_alpha_down = const _IconDataRegular(0xf15d);
+  static const IconData skull = const _IconDataSolid(0xf54c);
   static const IconData bullseye = const _IconDataSolid(0xf140);
   static const IconData fire = const _IconDataSolid(0xf06d);
   static const IconData arrows_alt = const _IconDataSolid(0xf0b2);

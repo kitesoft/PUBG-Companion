@@ -18,6 +18,7 @@ class HomePage extends StatefulWidget {
   final ValueChanged<AppThemes> onThemeChanged;
 
   static String sortRadioValue;
+  static ValueNotifier<bool> fabListener = new ValueNotifier<bool>(true);
 
   @override
   _HomePageState createState() => new _HomePageState();
@@ -28,6 +29,8 @@ class _HomePageState extends State<HomePage> {
   String _currentTitle;
   Widget _currentPage;
   int _currentIndex;
+
+  double _fabOpacity;
 
   void _handleSortChanged(String value) {}
 
@@ -49,6 +52,20 @@ class _HomePageState extends State<HomePage> {
     _currentPage = _pages[_currentIndex].pageWidget;
 
     HomePage.sortRadioValue = 'name';
+
+    _fabOpacity = 1.0;
+
+    HomePage.fabListener.addListener(() {
+      if (HomePage.fabListener.value == true) {
+        setState(() {
+          _fabOpacity = 1.0;
+        });
+      } else {
+        setState(() {
+          _fabOpacity = 0.3;
+        });
+      }
+    });
   }
 
   // Start of pages
@@ -93,12 +110,7 @@ class _HomePageState extends State<HomePage> {
       case 'name':
         return new Icon(FontAwesomeIcons.sort_alpha_down);
       case 'damage':
-        return new Container(
-            padding: EdgeInsets.only(right: 8.5, bottom: 2.0),
-            child: new Icon(
-              GovIcons.poison,
-              size: 30.0,
-            ));
+        return new Icon(FontAwesomeIcons.skull);
       case 'accuracy':
         return new Icon(FontAwesomeIcons.bullseye);
       case 'range':
@@ -160,151 +172,162 @@ class _HomePageState extends State<HomePage> {
                       title: new Text(page.title), icon: page.icon))
                   .toList()),
           floatingActionButton: _currentIndex == 1
-              ? new FloatingActionButton(
-            tooltip: 'Sort weapons',
-              isExtended: false,
-                  child: _getSortIcon(),
-                  onPressed: () {
-                    _showSortDialog<String>(
-                        context: context,
-                        child: new SimpleDialog(
-                            title: const Text('Sort weapons by...'),
-                            children: <Widget>[
-                              new SimpleDialogOption(
-                                child: new Row(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: <Widget>[
-                                    new Radio<String>(
-                                      value: 'name',
-                                      groupValue: HomePage.sortRadioValue,
-                                      onChanged: _handleSortChanged,
-                                    ),
-                                    new Icon(FontAwesomeIcons.sort_alpha_down,
-                                        size: 20.0,
-                                        color: Theme.of(context).accentColor),
-                                    new Padding(
-                                      padding:
-                                          const EdgeInsets.only(left: 16.0),
-                                      child: new Text(
-                                        'Name',
-                                        style: AppTextStyles.weaponsSortOption,
+              ? new Opacity(
+                  opacity: _fabOpacity,
+                  child: new FloatingActionButton(
+                    tooltip: 'Sort weapons',
+                    isExtended: false,
+                    child: _getSortIcon(),
+                    onPressed: () {
+                      _showSortDialog<String>(
+                          context: context,
+                          child: new SimpleDialog(
+                              title: const Text('Sort weapons by...'),
+                              children: <Widget>[
+                                new SimpleDialogOption(
+                                  child: new Row(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    children: <Widget>[
+                                      new Radio<String>(
+                                        value: 'name',
+                                        groupValue: HomePage.sortRadioValue,
+                                        onChanged: _handleSortChanged,
                                       ),
-                                    ),
-                                  ],
-                                ),
-                                onPressed: () {
-                                  setState(() {
-                                    HomePage.sortRadioValue = 'name';
-                                    _currentPage = new WeaponsPage(
-                                      scaffoldKey: _scaffoldKey,
-                                    );
-                                  });
-                                  Navigator.pop(context, 'Name');
-                                },
-                              ),
-                              new SimpleDialogOption(
-                                child: new Row(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: <Widget>[
-                                    new Radio<String>(
-                                      value: 'damage',
-                                      groupValue: HomePage.sortRadioValue,
-                                      onChanged: _handleSortChanged,
-                                    ),
-                                    new Icon(GovIcons.poison,
-                                        size: 20.0,
-                                        color: Theme.of(context).accentColor),
-                                    new Padding(
-                                      padding:
-                                          const EdgeInsets.only(left: 16.0),
-                                      child: new Text(
-                                        'Damage',
-                                        style: AppTextStyles.weaponsSortOption,
+                                      new Icon(FontAwesomeIcons.sort_alpha_down,
+                                          size: 20.0,
+                                          color: Theme.of(context).accentColor),
+                                      new Padding(
+                                        padding:
+                                            const EdgeInsets.only(left: 16.0),
+                                        child: new Text(
+                                          'Name',
+                                          style:
+                                              AppTextStyles.weaponsSortOption,
+                                        ),
                                       ),
-                                    ),
-                                  ],
+                                    ],
+                                  ),
+                                  onPressed: () {
+                                    setState(() {
+                                      HomePage.sortRadioValue = 'name';
+                                      _currentPage = new WeaponsPage(
+                                        scaffoldKey: _scaffoldKey,
+                                      );
+                                    });
+                                    Navigator.pop(context, 'Name');
+                                  },
                                 ),
-                                onPressed: () {
-                                  setState(() {
-                                    HomePage.sortRadioValue = 'damage';
-                                    _currentPage = new WeaponsPage(
-                                      scaffoldKey: _scaffoldKey,
-                                    );
-                                  });
+                                new SimpleDialogOption(
+                                  child: new Row(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    children: <Widget>[
+                                      new Radio<String>(
+                                        value: 'damage',
+                                        groupValue: HomePage.sortRadioValue,
+                                        onChanged: _handleSortChanged,
+                                      ),
+                                      new Icon(FontAwesomeIcons.skull,
+                                          size: 20.0,
+                                          color: Theme.of(context).accentColor),
+                                      new Padding(
+                                        padding:
+                                            const EdgeInsets.only(left: 16.0),
+                                        child: new Text(
+                                          'Damage',
+                                          style:
+                                              AppTextStyles.weaponsSortOption,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  onPressed: () {
+                                    setState(() {
+                                      HomePage.sortRadioValue = 'damage';
+                                      _currentPage = new WeaponsPage(
+                                        scaffoldKey: _scaffoldKey,
+                                      );
+                                    });
 
-                                  Navigator.pop(context, 'Damage');
-                                },
-                              ),
-                              new SimpleDialogOption(
-                                child: new Row(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: <Widget>[
-                                    new Radio<String>(
-                                      value: 'accuracy',
-                                      groupValue: HomePage.sortRadioValue,
-                                      onChanged: _handleSortChanged,
-                                    ),
-                                    new Icon(FontAwesomeIcons.bullseye,
-                                        size: 20.0,
-                                        color: Theme.of(context).accentColor),
-                                    new Padding(
-                                      padding:
-                                          const EdgeInsets.only(left: 16.0),
-                                      child: new Text(
-                                        'Accuracy',
-                                        style: AppTextStyles.weaponsSortOption,
-                                      ),
-                                    ),
-                                  ],
+                                    Navigator.pop(context, 'Damage');
+                                  },
                                 ),
-                                onPressed: () {
-                                  setState(() {
-                                    HomePage.sortRadioValue = 'accuracy';
-                                    _currentPage = new WeaponsPage(
-                                      scaffoldKey: _scaffoldKey,
-                                    );
-                                  });
-                                  Navigator.pop(context, 'Accuracy');
-                                },
-                              ),
-                              new SimpleDialogOption(
-                                child: new Row(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: <Widget>[
-                                    new Radio<String>(
-                                      value: 'range',
-                                      groupValue: HomePage.sortRadioValue,
-                                      onChanged: _handleSortChanged,
-                                    ),
-                                    new Icon(FontAwesomeIcons.arrows_alt,
-                                        size: 20.0,
-                                        color: Theme.of(context).accentColor),
-                                    new Padding(
-                                      padding:
-                                          const EdgeInsets.only(left: 16.0),
-                                      child: new Text(
-                                        'Range',
-                                        style: AppTextStyles.weaponsSortOption,
+                                new SimpleDialogOption(
+                                  child: new Row(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    children: <Widget>[
+                                      new Radio<String>(
+                                        value: 'accuracy',
+                                        groupValue: HomePage.sortRadioValue,
+                                        onChanged: _handleSortChanged,
                                       ),
-                                    ),
-                                  ],
+                                      new Icon(FontAwesomeIcons.bullseye,
+                                          size: 20.0,
+                                          color: Theme.of(context).accentColor),
+                                      new Padding(
+                                        padding:
+                                            const EdgeInsets.only(left: 16.0),
+                                        child: new Text(
+                                          'Accuracy',
+                                          style:
+                                              AppTextStyles.weaponsSortOption,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  onPressed: () {
+                                    setState(() {
+                                      HomePage.sortRadioValue = 'accuracy';
+                                      _currentPage = new WeaponsPage(
+                                        scaffoldKey: _scaffoldKey,
+                                      );
+                                    });
+                                    Navigator.pop(context, 'Accuracy');
+                                  },
                                 ),
-                                onPressed: () {
-                                  setState(() {
-                                    HomePage.sortRadioValue = 'range';
-                                    _currentPage = new WeaponsPage(
-                                      scaffoldKey: _scaffoldKey,
-                                    );
-                                  });
-                                  Navigator.pop(context, 'Range');
-                                },
-                              ),
-                            ]));
-                  },
+                                new SimpleDialogOption(
+                                  child: new Row(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    children: <Widget>[
+                                      new Radio<String>(
+                                        value: 'range',
+                                        groupValue: HomePage.sortRadioValue,
+                                        onChanged: _handleSortChanged,
+                                      ),
+                                      new Icon(FontAwesomeIcons.arrows_alt,
+                                          size: 20.0,
+                                          color: Theme.of(context).accentColor),
+                                      new Padding(
+                                        padding:
+                                            const EdgeInsets.only(left: 16.0),
+                                        child: new Text(
+                                          'Range',
+                                          style:
+                                              AppTextStyles.weaponsSortOption,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  onPressed: () {
+                                    setState(() {
+                                      HomePage.sortRadioValue = 'range';
+                                      _currentPage = new WeaponsPage(
+                                        scaffoldKey: _scaffoldKey,
+                                      );
+                                    });
+                                    Navigator.pop(context, 'Range');
+                                  },
+                                ),
+                              ]));
+                    },
+                  ),
                 )
               : null,
         ),

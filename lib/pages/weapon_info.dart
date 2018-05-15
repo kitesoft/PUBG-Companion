@@ -4,14 +4,27 @@ import 'package:flutter/material.dart';
 import 'package:pubg_companion/models/weapon.dart';
 import 'package:pubg_companion/utils/app_text_styles.dart';
 import 'package:pubg_companion/utils/font_awesome_icon_data.dart';
+import 'package:pubg_companion/widgets/weapon_info_advanced.dart';
+import 'package:pubg_companion/widgets/weapon_info_basic.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-class WeaponInfo extends StatelessWidget {
+class WeaponInfo extends StatefulWidget {
   final Weapon weapon;
 
   WeaponInfo(this.weapon);
 
+  @override
+  _WeaponInfoState createState() => new _WeaponInfoState(weapon);
+}
+
+class _WeaponInfoState extends State<WeaponInfo> {
+  final Weapon weapon;
+
+  _WeaponInfoState(this.weapon);
+
   static const String routeName = "/WeaponInfo";
+
+  bool _showAdvancedStats = false;
 
   Future<Null> _launchInBrowser(String url) async {
     if (await canLaunch(url)) {
@@ -56,9 +69,6 @@ class WeaponInfo extends StatelessWidget {
         title: new Text(
           'Weapon Details: ' + weapon.name,
         ),
-        actions: <Widget>[
-          new IconButton(icon: new Icon(Icons.add), onPressed: () {})
-        ],
       ),
       body: new Container(
         constraints: new BoxConstraints.expand(),
@@ -101,30 +111,34 @@ class WeaponInfo extends StatelessWidget {
                 ),
               ),
             ),
-            new Container(
-              constraints: new BoxConstraints(maxHeight: 37.5),
-              child: new Center(
-                child: new Text(
-                  weapon.fullName,
-                  style: AppTextStyles.weaponInfoSubheader,
-                  maxLines: 1,
-                ),
-              ),
-            ),
-            new Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: _flags +
-                  <Widget>[
-                    new Container(
-                      padding: EdgeInsets.only(bottom: 10.0),
+            weapon.fullName == 'None'
+                ? new Container()
+                : new Container(
+                    constraints: new BoxConstraints(maxHeight: 37.5),
+                    child: new Center(
                       child: new Text(
-                        weapon.manufacturer,
-                        style: AppTextStyles.weaponInfoManufacturer,
+                        weapon.fullName,
+                        style: AppTextStyles.weaponInfoSubheader,
+                        maxLines: 1,
                       ),
                     ),
-                  ],
-            ),
+                  ),
+            weapon.manufacturer == 'None'
+                ? new Container(padding: EdgeInsets.only(bottom: 10.0))
+                : new Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: _flags +
+                        <Widget>[
+                          new Container(
+                            padding: EdgeInsets.only(bottom: 10.0),
+                            child: new Text(
+                              weapon.manufacturer,
+                              style: AppTextStyles.weaponInfoManufacturer,
+                            ),
+                          ),
+                        ],
+                  ),
             new Container(
               color: new Color(0xFF171a25),
               margin: EdgeInsets.only(top: 10.0, bottom: 30.0),
@@ -295,72 +309,55 @@ class WeaponInfo extends StatelessWidget {
                           new Expanded(
                             child: new Padding(
                               padding: EdgeInsets.only(
-                                  top: 15.0, left: 15.0, right: 15.0),
+                                  top: 15.0,
+                                  left: 15.0,
+                                  right: 15.0,
+                                  bottom: 15.0),
                               child: new Row(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: <Widget>[
                                   new Flexible(
                                     child: new Column(
                                       children: <Widget>[
-                                        new Text(
-                                          weapon.wikipediaSummary,
-                                          textAlign: TextAlign.center,
-                                          style: AppTextStyles.weaponInfoRow,
-                                        ),
+                                        _showAdvancedStats
+                                            ? new WeaponInfoAdvanced(weapon)
+                                            : new WeaponInfoBasic(weapon),
                                         new Padding(
-                                          padding: const EdgeInsets.only(
-                                              top: 20.0, bottom: 20.0),
+                                          padding:
+                                              const EdgeInsets.only(top: 15.0),
                                           child: new Row(
                                             mainAxisAlignment:
-                                                MainAxisAlignment.spaceEvenly,
+                                                MainAxisAlignment.center,
                                             children: <Widget>[
-                                              new RaisedButton.icon(
-                                                onPressed: () {},
-                                                icon: new Icon(
-                                                  FontAwesomeIcons.wikipedia_w,
-                                                  size: 15.0,
-                                                ),
-                                                label: new Padding(
-                                                  padding:
-                                                      const EdgeInsets.only(
-                                                          left: 8.0),
-                                                  child: new Text(
-                                                    'Wikipedia'.toUpperCase(),
-                                                    style: AppTextStyles
-                                                        .weaponInfoRaisedButton,
-                                                  ),
-                                                ),
-                                                elevation: 3.0,
-                                                highlightElevation: 0.0,
+                                              new OutlineButton(
+                                                child: new Text(
+                                                    'Show Advanced Stats'),
+                                                textColor: _showAdvancedStats
+                                                    ? Theme
+                                                        .of(context)
+                                                        .accentColor
+                                                    : Theme
+                                                        .of(context)
+                                                        .primaryColorLight,
+                                                borderSide: new BorderSide(
+                                                    width: 3.0,
+                                                    color: _showAdvancedStats
+                                                        ? Theme
+                                                            .of(context)
+                                                            .accentColor
+                                                        : Theme
+                                                            .of(context)
+                                                            .primaryColorLight),
+                                                onPressed: () {
+                                                  setState(() {
+                                                    _showAdvancedStats =
+                                                        !_showAdvancedStats;
+                                                  });
+                                                },
                                               ),
-                                              new RaisedButton(
-                                                color: Colors.blueGrey[800],
-                                                onPressed: () {},
-                                                child: new Row(
-                                                  children: <Widget>[
-                                                    new Image(
-                                                        height: 20.0,
-                                                        image: new AssetImage(
-                                                            'assets/images/ui/gamepedia_logo.png')),
-                                                    new Padding(
-                                                      padding:
-                                                          const EdgeInsets.only(
-                                                              left: 8.0),
-                                                      child: new Text(
-                                                        'PUBG Wiki'
-                                                            .toUpperCase(),
-                                                        style: AppTextStyles
-                                                            .weaponInfoRaisedButton,
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
-                                                elevation: 3.0,
-                                                highlightElevation: 0.0,
-                                              )
                                             ],
                                           ),
-                                        )
+                                        ),
                                       ],
                                     ),
                                   ),

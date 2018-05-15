@@ -1,4 +1,7 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:pubg_companion/models/weapon.dart';
 import 'package:pubg_companion/pages/home_page.dart';
 import 'package:pubg_companion/pages/weapon_info.dart';
@@ -19,6 +22,7 @@ class WeaponsList extends StatefulWidget {
 class _WeaponsListState extends State<WeaponsList> {
   List<Weapon> weapons;
   final GlobalKey<ScaffoldState> scaffoldKey;
+  ScrollController _weaponsScrollController;
 
   _WeaponsListState({this.weapons, this.scaffoldKey});
 
@@ -49,7 +53,7 @@ class _WeaponsListState extends State<WeaponsList> {
       case 'accuracy':
         for (var i = 0; i < list.length; i++) {
           for (var j = i + 1; j < list.length; j++) {
-            if (list[i].scopedSpread.compareTo(list[j].scopedSpread) > 0) {
+            if (list[i].scopedSpread().compareTo(list[j].scopedSpread()) > 0) {
               var tmp = list[i];
               list[i] = list[j];
               list[j] = tmp;
@@ -77,6 +81,22 @@ class _WeaponsListState extends State<WeaponsList> {
     super.initState();
 
     _weaponsSort(weapons, HomePage.sortRadioValue);
+
+    _weaponsScrollController = new ScrollController();
+
+    _weaponsScrollController.addListener(() {
+      if (_weaponsScrollController.position.userScrollDirection ==
+          ScrollDirection.reverse) {
+        HomePage.fabListener.value = false;
+      } else {
+        HomePage.fabListener.value = true;
+      }
+    });
+
+    // TODO: test, build animation for FAB
+    Future.delayed(const Duration(milliseconds: 5), () {
+      HomePage.fabListener.value = true;
+    });
   }
 
   @override
@@ -84,6 +104,7 @@ class _WeaponsListState extends State<WeaponsList> {
     _weaponsSort(weapons, HomePage.sortRadioValue);
     return new Expanded(
         child: new ListView.builder(
+      controller: _weaponsScrollController,
       itemCount: weapons.length,
       itemBuilder: (context, index) {
         return new Column(children: <Widget>[

@@ -6,9 +6,11 @@ class Weapon {
   final double rate;
   final int damage;
   final int bulletSpeed;
+  final double drag;
   final double reload;
   final int range;
-  final double scopedSpread;
+  final double spread;
+  final double scoping;
   final bool crateOnly;
   final bool mobile;
   final String fullName;
@@ -27,9 +29,11 @@ class Weapon {
       this.rate,
       this.damage,
       this.bulletSpeed,
+      this.drag,
       this.reload,
       this.range,
-      this.scopedSpread,
+      this.spread,
+      this.scoping,
       this.crateOnly,
       this.mobile,
       this.fullName,
@@ -49,9 +53,17 @@ class Weapon {
       rate: double.parse(json['rate'].toString()),
       damage: json['damage'],
       bulletSpeed: json['bulletspeed'],
+      drag: json['drag'].toString() != 'None'
+          ? double.parse(json['drag'].toString())
+          : 0.0,
       reload: double.parse(json['reload'].toString()),
       range: json['range'],
-      scopedSpread: double.parse(json['scopedspread'].toString()),
+      spread: json['spread'].toString() != 'None'
+          ? double.parse(json['spread'].toString())
+          : 0.0,
+      scoping: json['scoping'].toString() != 'None'
+          ? double.parse(json['scoping'].toString())
+          : 0.0,
       crateOnly: json['crateonly'].toString().toUpperCase() == 'TRUE',
       mobile: json['mobile'].toString().toUpperCase() == 'TRUE',
       fullName: json['fullname'] ?? null,
@@ -65,5 +77,9 @@ class Weapon {
       wikipediaLink:
           json['wikipedialink'] == 'None' ? 'None' : json['wikipedialink'],
     );
+  }
+
+  double scopedSpread() {
+    return spread * scoping;
   }
 }

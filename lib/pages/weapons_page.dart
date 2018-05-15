@@ -9,6 +9,7 @@ import 'package:pubg_companion/widgets/weapons_list.dart';
 List<String> weaponFamilies = const <String>[
   'Assault Rifle',
   'Sniper Rifle',
+  'DMR',
   'SMG',
   'LMG',
   'Shotgun',

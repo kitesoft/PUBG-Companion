@@ -43,10 +43,10 @@ abstract class WeaponsRating {
 
     for (var i = 0; i < damageScore; i++) {
       Widget temp = new Container(
-          padding: EdgeInsets.only(right: 0.0),
+          padding: EdgeInsets.only(right: 2.7),
           child: new Icon(
-            GovIcons.poison,
-            size: 13.7,
+            FontAwesomeIcons.skull,
+            size: 11.0,
             color: _ratingGradient[i],
           ));
 
@@ -117,7 +117,11 @@ abstract class WeaponsRating {
   }*/
 
   static int weaponAccuracyValue(Weapon weapon) {
-    return (0.03 / weapon.scopedSpread * 100).round();
+    if (weapon.family.contains('Melee')) {
+      return 100;
+    }
+
+    return (0.03 / weapon.scopedSpread() * 100).round();
   }
 
   static Widget weaponAccuracyBar(Weapon weapon) {
